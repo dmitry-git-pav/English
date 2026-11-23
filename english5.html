@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>English 5 — умные задания</title>
+<title>English 5 — умные задания (Vosk)</title>
 <style>
   :root{
     --bg:#f4f7ff; --card:#ffffff; --ink:#22304a; --muted:#6b7a99;
@@ -28,17 +28,13 @@
     border:1px solid var(--border); border-radius:12px; padding:6px 10px; font-size:13px;
     flex-wrap:wrap; max-width:100%;
   }
-  select{border:1px solid var(--border); border-radius:8px; padding:4px 6px; font-size:13px; background:#fff; max-width:240px;}
-  .test-btn{border:1px solid var(--blue); background:#fff; color:var(--blue); border-radius:8px; padding:4px 10px; font-size:12px; cursor:pointer; font-weight:700;}
-  .test-btn:hover{background:var(--blue); color:#fff;}
-  .voice-warn{
-    width:100%; max-width:960px; background:#fff4e5; border:1px solid #ffb74d;
-    color:#7a4a00; border-radius:12px; padding:10px 14px; font-size:13px;
-    margin-bottom:12px; display:none;
+  .vosk-status{
+    font-size:12px; color:var(--muted); padding:4px 10px; background:#f0f3fa;
+    border-radius:8px; display:inline-block; font-weight:700;
   }
-  .voice-warn.show{display:block;}
-  .voice-warn b{color:#5c3600;}
-  .voice-warn code{background:#ffe0b2; padding:1px 5px; border-radius:4px; font-size:12px;}
+  .vosk-status.ok{background:#e9fbef; color:#157a43;}
+  .vosk-status.err{background:#fdecec; color:#a12b2b;}
+  
   main{width:100%; max-width:960px;}
   .card{
     background:var(--card); border:1px solid var(--border); border-radius:18px;
@@ -107,6 +103,15 @@
   .voice-hint .ico{font-size:20px;}
   .voice-hint b{color:#5c4400;}
   .answer-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#f2f6ff; border:1px solid var(--border); border-radius:14px; padding:12px;}
+  
+  .mic-wrap{display:flex; gap:6px; align-items:center; flex-shrink:0;}
+  .lang-btn{
+    padding:8px 12px; border-radius:8px; border:2px solid var(--border); background:#fff;
+    font-size:13px; font-weight:700; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:4px;
+  }
+  .lang-btn.active{border-color:var(--blue); background:var(--blue); color:#fff;}
+  .lang-btn:hover:not(.active){background:#f2f6ff;}
+  
   .mic-btn{
     width:56px; height:56px; border-radius:50%; border:none; background:var(--blue);
     color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center;
@@ -115,6 +120,7 @@
   .mic-btn:hover{background:var(--blue-d); transform:scale(1.08);}
   .mic-btn.listening{background:var(--red); animation:pulse 1s infinite;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(224,82,82,.5)}70%{box-shadow:0 0 0 14px rgba(224,82,82,0)}100%{box-shadow:0 0 0 0 rgba(224,82,82,0)}}
+  
   .answer-bar input{flex:1; min-width:150px; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:16px;}
   .answer-bar input:focus{outline:2px solid var(--blue); border-color:var(--blue);}
   .btn{border:none; border-radius:10px; padding:10px 18px; font-size:15px; font-weight:700; cursor:pointer; background:var(--green); color:#fff; transition:.15s;}
@@ -174,33 +180,27 @@
   .hidden-word{font-size:26px; font-weight:800; color:var(--muted); letter-spacing:6px; text-align:center; padding:16px;
     background:#f0f3fa; border-radius:14px; border:2px dashed var(--border);}
   .reveal{color:var(--blue); border-color:var(--blue); border-style:solid;}
-  .voice-list{
-    font-size:11px; color:var(--muted); margin-top:8px; max-height:100px;
-    overflow-y:auto; background:#f7f9ff; border-radius:8px; padding:6px 10px;
-    font-family:monospace;
-  }
   @media(max-width:600px){ .sentence{font-size:18px;} .sentence .pic{font-size:34px;} }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo"><span class="flag">🇬🇧</span>English <span>5 класс</span> — умные задания 🎓</div>
+  <div class="logo"><span class="flag">🇬🇧</span>English <span>5 класс</span> — Vosk офлайн 🎓</div>
   <div class="voice-panel">
-    🔊 Голос:
-    <select id="voiceSelect"></select>
-    <button class="test-btn" id="testVoice">▶ Проверить</button>
+    🌐 Язык распознавания:
+    <select id="voskLang" style="padding:6px 10px; border-radius:8px; border:1px solid var(--border); font-weight:700;">
+      <option value="ru">🇷🇺 Русский</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+    <span class="vosk-status" id="voskStatus">загрузка...</span>
   </div>
 </header>
 
-<div class="voice-warn" id="voiceWarn">
-  <b>⚠️ Внимание:</b> в вашей системе не найдено «естественных» голосов (Natural / Google). Поэтому звучит старый голос Microsoft.
-  <br>Установите их: <b>Windows</b> → Параметры → Время и язык → Речь → «Добавить голоса» → русский и английский. После установки перезагрузите браузер.
-  <br>Либо используйте <b>Chrome</b> — в нём обычно уже есть «Google русский» и «Google UK English Female».
-  <div class="voice-list" id="voiceList"></div>
-</div>
-
 <main id="app"></main>
+
+<!-- Подключаем библиотеку Vosk -->
+<script src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.js"></script>
 
 <script>
 /* ================================================================
@@ -456,14 +456,11 @@ const DATA = {
 const app = document.getElementById('app');
 const state = { topic:null, ex:null, itemIdx:0, score:0, streak:0, found:[], grid:null, placement:null, selCells:[], numCur:null, numIdx:0, spellCur:null, spellTyped:"", spellIdx:0 };
 
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recog = null, listening = false, voiceHandler = null;
-
 function norm(s){ return s.toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
 function setHeard(html){ const el = document.getElementById('heard'); if (el) el.innerHTML = html; }
 
 /* ================================================================
-   ГОЛОС
+   ГОЛОС ОЗВУЧКИ (SpeechSynthesis)
    ================================================================ */
 let allVoices = [];
 let chosenRu = null, chosenEn = null;
@@ -481,67 +478,16 @@ function refreshVoices(){
   chosenRu = pickByPriority(ru, RU_PRIORITY) || ru[0] || null;
   const en = allVoices.filter(x => x.lang.toLowerCase().startsWith('en'));
   chosenEn = pickByPriority(en, EN_PRIORITY) || en[0] || null;
-  buildVoiceSelect();
-  checkVoiceQuality();
 }
 function pickByPriority(list, priority){
   for (const name of priority){ const f = list.find(v => v.name === name || v.name.includes(name)); if (f) return f; }
   return list.find(v => GOOD_RE.test(v.name)) || list.find(v => !/compact|robot|espeak/i.test(v.name)) || list[0] || null;
 }
-function buildVoiceSelect(){
-  const sel = document.getElementById('voiceSelect'); if (!sel) return;
-  const prev = sel.value; sel.innerHTML = '';
-  const groups = {
-    '🇷🇺 Русские': allVoices.filter(v => v.lang.toLowerCase().startsWith('ru')),
-    '🇬🇧 Английские': allVoices.filter(v => v.lang.toLowerCase().startsWith('en'))
-  };
-  for (const [label, list] of Object.entries(groups)){
-    if (!list.length) continue;
-    const og = document.createElement('optgroup'); og.label = label;
-    list.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v.name + '|' + v.lang;
-      const good = GOOD_RE.test(v.name) ? ' ⭐' : '';
-      opt.textContent = v.name + ' (' + v.lang + ')' + good;
-      og.appendChild(opt);
-    });
-    sel.appendChild(og);
-  }
-  if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
-  else {
-    const best = chosenRu || chosenEn;
-    if (best && [...sel.options].some(o => o.value === best.name + '|' + best.lang)) sel.value = best.name + '|' + best.lang;
-    else if (sel.options.length) sel.selectedIndex = 0;
-  }
-}
-function checkVoiceQuality(){
-  const warn = document.getElementById('voiceWarn');
-  const list = document.getElementById('voiceList');
-  if (!warn || !list) return;
-  const hasGood = allVoices.some(v => GOOD_RE.test(v.name) && /^(ru|en)/i.test(v.lang));
-  warn.classList.toggle('show', !hasGood);
-  const lines = allVoices.map(v => {
-    const good = GOOD_RE.test(v.name) ? ' ⭐' : '';
-    return `• ${v.name} — ${v.lang}${good}`;
-  }).join('<br>');
-  list.innerHTML = '<b>Найдено голосов: ' + allVoices.length + '</b><br>' + (lines || 'нет');
-}
-function currentVoiceForLang(lang){
-  const sel = document.getElementById('voiceSelect');
-  if (sel && sel.value){
-    const [name, l] = sel.value.split('|');
-    const v = allVoices.find(x => x.name === name && x.lang === l);
-    if (v) return v;
-  }
-  if (lang.startsWith('ru')) return chosenRu;
-  return chosenEn;
-}
 if (window.speechSynthesis){
   refreshVoices();
   speechSynthesis.onvoiceschanged = () => refreshVoices();
-  setTimeout(refreshVoices, 300);
-  setTimeout(refreshVoices, 1000);
-  setTimeout(refreshVoices, 2500);
+  setTimeout(refreshVoices, 500);
+  setTimeout(refreshVoices, 1500);
 }
 
 const EMOJI_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}]/gu;
@@ -555,7 +501,8 @@ function speak(text, lang){
   speakingQueue = speakingQueue.then(() => new Promise(resolve => {
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = lang || 'ru-RU';
-    const v = currentVoiceForLang(u.lang); if (v) u.voice = v;
+    const v = lang && lang.startsWith('en') ? chosenEn : chosenRu;
+    if (v) u.voice = v;
     u.rate = 0.95; u.pitch = 1.0; u.volume = 1;
     u.onend = resolve; u.onerror = resolve;
     speechSynthesis.speak(u);
@@ -564,56 +511,101 @@ function speak(text, lang){
 function speakRu(t){ speak(t, 'ru-RU'); }
 function speakEn(t){ speak(t, 'en-US'); }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('testVoice');
-  if (btn){
-    btn.onclick = () => {
-      const sel = document.getElementById('voiceSelect');
-      if (!sel || !sel.value){ speakRu('Голос не выбран'); return; }
-      const [name, l] = sel.value.split('|');
-      const v = allVoices.find(x => x.name === name && x.lang === l);
-      const isRu = v && v.lang.toLowerCase().startsWith('ru');
-      const sample = isRu ? 'Привет! Это проверка голоса для занятий английским. 😊 👍' : 'Hello! This is a voice test for English lessons. 😊 👍';
-      const clean = cleanForSpeech(sample);
-      const u = new SpeechSynthesisUtterance(clean);
-      u.voice = v || null; u.lang = l; u.rate = 0.95; u.pitch = 1.0;
-      speechSynthesis.cancel(); speechSynthesis.speak(u);
-    };
-  }
-});
+/* ================================================================
+   VOSK (РАСПОЗНАВАНИЕ РЕЧИ)
+   ================================================================ */
+const MODEL_PATHS = {
+  ru: 'vosk-model-small-ru-0.22',
+  en: 'vosk-model-small-en-us-0.15'
+};
+let voskModel = null;
+let voskLoaded = { ru:false, en:false };
+let voskAudioCtx = null, voskStream = null, voskNode = null;
+let voskRec = null;
+let voiceHandler = null;
 
-/* ============ МИКРОФОН (ТИХИЙ РЕЖИМ) ============ */
-function startMic(handler){
-  if (!SR){ setHeard('⚠️ Браузер не поддерживает микрофон. Используйте кнопки.'); return; }
-  if (location.protocol === 'file:'){ setHeard('⚠️ Нужен https:// или localhost. Используйте кнопки.'); return; }
-  voiceHandler = handler;
-  try { recog = new SR(); } catch(e){ setHeard('⚠️ Микрофон недоступен. Используйте кнопки.'); return; }
-  recog.lang = 'ru-RU';
-  recog.interimResults = false;
-  recog.maxAlternatives = 3;
-  recog.onstart = () => { listening = true; updateMicUI(true); };
-  recog.onend = () => { listening = false; updateMicUI(false); };
-  recog.onerror = (e) => {
-    listening = false; updateMicUI(false);
-    const err = e.error || 'unknown';
-    if (err === 'network') {
-       setHeard('⚠️ Голосовой ввод заблокирован сетью. Нажимайте кнопки или вводите с клавиатуры.');
-    } else if (err === 'not-allowed' || err === 'service-not-allowed') {
-       setHeard('⚠️ Доступ к микрофону запрещён. Разрешите его в настройках браузера.');
-    } else if (err === 'no-speech') {
-       setHeard('🤔 Речь не распознана. Попробуйте ещё раз.');
-    } else {
-       setHeard('⚠️ Ошибка микрофона. Используйте кнопки или клавиатуру.');
-    }
-  };
-  recog.onresult = (e) => {
-    const alts = Array.from(e.results[0]).map(a => a.transcript);
-    setHeard('Распознано: <b>' + alts.map(a=>a.trim()).join(' / ') + '</b>');
-    if (voiceHandler) voiceHandler(alts);
-  };
-  try { recog.start(); } catch(e){ setHeard('⚠️ Не удалось запустить микрофон.'); }
+function setVoskStatus(text, cls){
+  const el = document.getElementById('voskStatus');
+  if (el){ el.textContent = text; el.className = 'vosk-status ' + (cls || ''); }
 }
+
+async function loadVoskModel(lang){
+  if (!window.Vosk){
+    setVoskStatus('CDN недоступен', 'err');
+    return null;
+  }
+  if (voskLoaded[lang] && voskModel && voskModel._lang === lang) return voskModel;
+  setVoskStatus('загрузка ' + lang + '...');
+  try {
+    const model = await Vosk.createModel(MODEL_PATHS[lang] + '/model.tar.gz');
+    model._lang = lang;
+    voskModel = model;
+    voskLoaded[lang] = true;
+    setVoskStatus(lang.toUpperCase() + ' готова ✓', 'ok');
+    return model;
+  } catch(e){
+    console.error('Vosk model load error:', e);
+    setVoskStatus(lang.toUpperCase() + ' не загрузилась', 'err');
+    return null;
+  }
+}
+
+async function startVosk(onResult){
+  const lang = document.getElementById('voskLang').value;
+  if (!voskLoaded[lang]){
+    const m = await loadVoskModel(lang);
+    if (!m) return;
+  }
+  try {
+    voskAudioCtx = new AudioContext();
+    voskStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const source = voskAudioCtx.createMediaStreamSource(voskStream);
+    voskRec = new voskModel.KaldiRecognizer(voskAudioCtx.sampleRate);
+    voskRec.setWords(true);
+    voskRec.on('result', (msg) => {
+      const text = msg.result && msg.result.text;
+      if (text){
+        setHeard('Распознано (' + lang + '): <b>' + text + '</b>');
+        if (onResult) onResult([text]);
+      }
+    });
+    voskRec.on('partialresult', (msg) => {
+      if (msg.result && msg.result.partial) setHeard('… ' + msg.result.partial);
+    });
+    voskNode = voskAudioCtx.createScriptProcessor(4096, 1, 1);
+    voskNode.onaudioprocess = (e) => {
+      if (voskRec) voskRec.acceptWaveform(e.inputBuffer);
+    };
+    source.connect(voskNode);
+    voskNode.connect(voskAudioCtx.destination);
+    updateMicUI(true);
+    setHeard('🎙️ Слушаю (' + lang + '). Скажите ответ.');
+  } catch(e){
+    console.error('Vosk start error:', e);
+    setHeard('⚠️ Ошибка микрофона. Используйте кнопки или клавиатуру.');
+    updateMicUI(false);
+  }
+}
+
+function stopVosk(){
+  try { if (voskNode) voskNode.disconnect(); } catch(e){}
+  try { if (voskStream) voskStream.getTracks().forEach(t=>t.stop()); } catch(e){}
+  try { if (voskAudioCtx) voskAudioCtx.close(); } catch(e){}
+  voskNode = null; voskStream = null; voskAudioCtx = null;
+  if (voskRec){ try { voskRec.remove(); } catch(e){} voskRec = null; }
+  updateMicUI(false);
+}
+
 function updateMicUI(on){ document.querySelectorAll('.mic-btn').forEach(b => b.classList.toggle('listening', on)); }
+
+document.getElementById('voskLang').onchange = () => {
+  if (voskRec) { stopVosk(); setHeard('Язык переключён. Нажмите 🎤 снова.'); }
+  const lang = document.getElementById('voskLang').value;
+  loadVoskModel(lang);
+};
+
+/* Предзагрузка русской модели при старте */
+setTimeout(() => loadVoskModel('ru'), 500);
 
 /* ============ КРЕАТИВ ============ */
 function confetti(n){
@@ -652,16 +644,19 @@ function motivate(){
 function answerBar(){
   return `
     <div class="answer-bar">
-      <button class="mic-btn" id="micBtn" title="Сказать номер ответа">🎤</button>
+      <button class="mic-btn" id="micBtn" title="Сказать ответ / Остановить">🎤</button>
       <input id="typedAnswer" type="text" placeholder="…или введи ответ с клавиатуры" autocomplete="off">
       <button class="btn blue" id="checkBtn">Проверить</button>
     </div>
     <div class="heard" id="heard"></div>
-    <div class="hint">🎙️ Если микрофон недоступен — просто нажимайте на варианты или вводите текст с клавиатуры. Всё работает!</div>`;
+    <div class="hint">🎙️ Нажмите 🎤 для записи. Повторное нажатие — стоп. Если не работает, используйте кнопки.</div>`;
 }
 function bindAnswerBar(onSubmit, onVoice){
   const btn = document.getElementById('micBtn');
-  if (btn) btn.onclick = () => { if (!listening) startMic(onVoice); };
+  if (btn) btn.onclick = () => {
+    if (voskRec) { stopVosk(); setHeard('Микрофон выключен.'); return; }
+    startVosk(onVoice);
+  };
   const check = document.getElementById('checkBtn');
   const input = document.getElementById('typedAnswer');
   const submit = () => { const v = input.value.trim(); if (v) onSubmit([v]); };
@@ -681,7 +676,7 @@ function showHome(){
   app.innerHTML = `
     <div class="card">
       <h1>👋 Выбери раздел</h1>
-      <p class="sub">Задания для 5 класса. Отвечай голосом (называй номер варианта), мышью или с клавиатуры.</p>
+      <p class="sub">Задания для 5 класса. Отвечай голосом (Vosk), мышью или с клавиатуры.</p>
       <div class="topic-grid">
         ${DATA.topics.map((t,i)=>`
           <div class="topic" onclick="openTopic(${i})">
@@ -772,7 +767,7 @@ function handleChoiceVoice(alts){
     }
     for (const o of it.options) if (norm(o) === t){ checkChoice(o, null); return; }
   }
-  setHeard('Скажи номер варианта: первый, второй или третий. Или нажми на кнопку.');
+  setHeard('Не понял. Скажи: первый, второй или третий. Или нажми на кнопку.');
 }
 function checkChoice(val, btnEl){
   const e = DATA.topics[state.ex.i].exercises[state.ex.j];
@@ -1212,8 +1207,9 @@ function renderResult(total){
   speakRu('Итог: ' + state.score + ' из ' + total + '. ' + msg);
 }
 
-if (!SR){
-  setTimeout(()=>alert('Ваш браузер не поддерживает распознавание речи.\nГолосовой ввод работает в Chrome и Edge.\nВ любом браузере можно вводить ответы с клавиатуры.'), 400);
+/* Инициализация */
+if (!window.Vosk){
+  setTimeout(()=>setHeard('⚠️ Vosk не загрузился. Проверьте интернет. Используйте кнопки.'), 1000);
 }
 showHome();
 </script>
