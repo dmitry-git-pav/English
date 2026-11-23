@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English 5 — умные задания</title>
+<style>
+  :root{
+    --bg:#f4f7ff; --card:#ffffff; --ink:#22304a; --muted:#6b7a99;
+    --blue:#4f7cff; --blue-d:#3b63d8; --green:#2fbf71; --red:#e05252;
+    --yellow:#ffc93c; --border:#dfe6f5; --purple:#8b5cf6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI', system-ui, sans-serif; background:var(--bg);
+    color:var(--ink); min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; padding:16px; overflow-x:hidden;
+  }
+  header{
+    width:100%; max-width:960px; display:flex; align-items:center;
+    justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;
+  }
+  .logo{font-size:22px; font-weight:800; display:flex; align-items:center; gap:8px;}
+  .logo .flag{font-size:26px;}
+  .logo span{color:var(--blue);}
+  .voice-panel{
+    display:flex; align-items:center; gap:8px; background:var(--card);
+    border:1px solid var(--border); border-radius:12px; padding:6px 10px; font-size:13px;
+    flex-wrap:wrap; max-width:100%;
+  }
+  select{border:1px solid var(--border); border-radius:8px; padding:4px 6px; font-size:13px; background:#fff; max-width:240px;}
+  .test-btn{border:1px solid var(--blue); background:#fff; color:var(--blue); border-radius:8px; padding:4px 10px; font-size:12px; cursor:pointer; font-weight:700;}
+  .test-btn:hover{background:var(--blue); color:#fff;}
+  .voice-warn{
+    width:100%; max-width:960px; background:#fff4e5; border:1px solid #ffb74d;
+    color:#7a4a00; border-radius:12px; padding:10px 14px; font-size:13px;
+    margin-bottom:12px; display:none;
+  }
+  .voice-warn.show{display:block;}
+  .voice-warn b{color:#5c3600;}
+  .voice-warn code{background:#ffe0b2; padding:1px 5px; border-radius:4px; font-size:12px;}
+  .mic-warn{
+    width:100%; max-width:960px; background:#fff0f0; border:1px solid #ff8a8a;
+    color:#7a1a1a; border-radius:12px; padding:12px 16px; font-size:13px;
+    margin-bottom:12px; display:none;
+  }
+  .mic-warn.show{display:block;}
+  .mic-warn b{color:#5c0000;}
+  .mic-warn ul{margin:8px 0 0 18px; line-height:1.6;}
+  .mic-warn .dismiss{margin-top:10px; background:#e05252; color:#fff; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer;}
+  main{width:100%; max-width:960px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:22px; box-shadow:0 6px 18px rgba(60,80,140,.07); margin-bottom:16px;
+    animation:fadeIn .35s ease;
+  }
+  @keyframes fadeIn{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:translateY(0);}}
+  h1{font-size:26px; margin-bottom:6px; display:flex; align-items:center; gap:10px;}
+  h2{font-size:20px; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .sub{color:var(--muted); font-size:14px; margin-bottom:16px;}
+  .topic-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+  .topic{
+    background:linear-gradient(135deg,#eef3ff,#fff); border:2px solid var(--border);
+    border-radius:16px; padding:18px; cursor:pointer; transition:.2s;
+    position:relative; overflow:hidden;
+  }
+  .topic:hover{border-color:var(--blue); transform:translateY(-3px) scale(1.02); box-shadow:0 8px 20px rgba(79,124,255,.15);}
+  .topic .ico{font-size:38px; line-height:1;}
+  .topic b{display:block; margin:8px 0 4px; font-size:16px;}
+  .topic small{color:var(--muted);}
+  .ex-list{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+  .ex-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+    cursor:pointer; background:#fbfcff; transition:.15s;
+  }
+  .ex-item:hover{border-color:var(--blue); background:#f2f6ff;}
+  .ex-item .go{color:var(--blue); font-weight:700; white-space:nowrap;}
+  .badge{font-size:12px; background:#eaf0ff; color:var(--blue-d); border-radius:20px; padding:2px 10px;}
+  .progress-wrap{display:flex; align-items:center; gap:10px; margin:10px 0 16px;}
+  .progress{flex:1; height:12px; background:#e8edf9; border-radius:20px; overflow:hidden;}
+  .progress > div{height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--green)); border-radius:20px; transition:width .4s ease;}
+  .score{font-weight:800; color:var(--blue-d); min-width:70px; text-align:right;}
+  .sentence{
+    font-size:22px; line-height:1.7; margin:14px 0; background:#f7f9ff;
+    border-radius:12px; padding:16px; display:flex; align-items:center; gap:14px;
+  }
+  .sentence .pic{font-size:46px; flex-shrink:0;}
+  .sentence .text{flex:1;}
+  .blank{display:inline-block; min-width:90px; border-bottom:3px dashed var(--blue); color:var(--blue); font-weight:800; text-align:center; transition:.2s;}
+  .blank.filled{border-bottom-style:solid;}
+  .blank.ok{color:var(--green); border-color:var(--green);}
+  .blank.bad{color:var(--red); border-color:var(--red); animation:shake .35s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .options{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
+  .opt{
+    border:2px solid var(--border); background:#fff; border-radius:12px;
+    padding:10px 18px; font-size:17px; cursor:pointer; transition:.15s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .opt:hover{border-color:var(--blue); transform:translateY(-2px);}
+  .opt .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%; background:var(--blue); color:#fff;
+    font-size:13px; font-weight:700; flex-shrink:0;
+  }
+  .opt.ok{border-color:var(--green); background:#e9fbef; color:#157a43;}
+  .opt.ok .num{background:var(--green);}
+  .opt.bad{border-color:var(--red); background:#fdecec; color:#a12b2b; animation:shake .35s;}
+  .opt.bad .num{background:var(--red);}
+  .voice-hint{
+    background:#fff8e1; border:1px solid #ffe082; border-radius:10px;
+    padding:10px 14px; font-size:14px; color:#7a5c00; margin-bottom:12px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .voice-hint .ico{font-size:20px;}
+  .voice-hint b{color:#5c4400;}
+  .answer-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#f2f6ff; border:1px solid var(--border); border-radius:14px; padding:12px;}
+  .mic-btn{
+    width:56px; height:56px; border-radius:50%; border:none; background:var(--blue);
+    color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center;
+    justify-content:center; transition:.15s; flex-shrink:0;
+  }
+  .mic-btn:hover{background:var(--blue-d); transform:scale(1.08);}
+  .mic-btn.listening{background:var(--red); animation:pulse 1s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(224,82,82,.5)}70%{box-shadow:0 0 0 14px rgba(224,82,82,0)}100%{box-shadow:0 0 0 0 rgba(224,82,82,0)}}
+  .answer-bar input{flex:1; min-width:150px; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:16px;}
+  .answer-bar input:focus{outline:2px solid var(--blue); border-color:var(--blue);}
+  .btn{border:none; border-radius:10px; padding:10px 18px; font-size:15px; font-weight:700; cursor:pointer; background:var(--green); color:#fff; transition:.15s;}
+  .btn:hover{transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.1);}
+  .btn.gray{background:#8a97b5;}
+  .btn.blue{background:var(--blue);}
+  .hint{font-size:13px; color:var(--muted); margin-top:8px;}
+  .heard{font-size:14px; color:var(--muted); margin-top:8px; min-height:18px;}
+  .heard b{color:var(--ink);}
+  .ws-layout{display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;}
+  .ws-grid-wrap{position:relative;}
+  table.ws{border-collapse:collapse; user-select:none;}
+  table.ws th{color:var(--muted); font-size:12px; width:34px; height:26px;}
+  table.ws td{width:34px; height:34px; text-align:center; font-weight:800; font-size:16px; border:1px solid var(--border); background:#fff; cursor:pointer; border-radius:4px; transition:.12s;}
+  table.ws td:hover{background:#f2f6ff;}
+  table.ws td.sel{background:var(--yellow); transform:scale(1.1);}
+  table.ws td.found{background:var(--green); color:#fff; animation:pop .3s;}
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+  .words-list{display:flex; flex-direction:column; gap:8px;}
+  .word-chip{border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-weight:700; letter-spacing:1px; background:#fff; transition:.2s;}
+  .word-chip.done{background:#e9fbef; border-color:var(--green); color:#157a43; text-decoration:line-through;}
+  .controls{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .nav-btn{
+    background:var(--blue); color:#fff; border:none; border-radius:10px;
+    padding:10px 18px; font-size:15px; font-weight:700; cursor:pointer;
+    transition:.15s; font-family:inherit;
+  }
+  .nav-btn:hover:not(:disabled){background:var(--blue-d);}
+  .nav-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .result{text-align:center; padding:30px 10px;}
+  .result .stars{font-size:52px; margin:10px 0; animation:bounce .6s;}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  .feedback{min-height:24px; font-weight:700; margin-top:10px;}
+  .feedback.ok{color:var(--green);} .feedback.bad{color:var(--red);}
+  .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin:14px 0;}
+  .cal-grid div{aspect-ratio:1; display:flex; align-items:center; justify-content:center; background:#f7f9ff; border-radius:8px; font-size:14px; cursor:pointer; border:1px solid var(--border); transition:.15s;}
+  .cal-grid div:hover:not(.day){transform:scale(1.08);}
+  .cal-grid .day{color:var(--muted); font-size:11px; background:none; border:none; cursor:default;}
+  .cal-grid .event{background:var(--blue); color:#fff; font-weight:700; position:relative;}
+  .cal-grid .event::after{content:'🎉'; position:absolute; top:-6px; right:-6px; font-size:14px;}
+  .cal-grid .event:hover{background:var(--blue-d);}
+  .cal-grid .today{outline:2px solid var(--green);}
+  .numrow{display:flex; gap:8px; flex-wrap:wrap; margin:12px 0;}
+  .numrow button{width:64px; height:56px; border-radius:10px; border:2px solid var(--border); background:#fff; font-size:20px; font-weight:700; cursor:pointer; transition:.15s;}
+  .numrow button:hover{border-color:var(--blue); transform:translateY(-2px);}
+  .numrow button.ok{background:var(--green); color:#fff; border-color:var(--green);}
+  .numrow button.bad{background:var(--red); color:#fff; border-color:var(--red);}
+  .letters{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;}
+  .letters button{width:46px; height:46px; border-radius:10px; border:2px solid var(--border); background:#fff; font-size:20px; font-weight:700; cursor:pointer; transition:.15s;}
+  .letters button:hover{border-color:var(--blue); transform:translateY(-2px);}
+  .letters button.used{opacity:.25; pointer-events:none;}
+  .answer-line{font-size:24px; letter-spacing:8px; min-height:34px; color:var(--blue); font-weight:800;}
+  .confetti{position:fixed; width:10px; height:10px; pointer-events:none; z-index:9999; animation:fall 1.5s linear forwards;}
+  @keyframes fall{0%{transform:translateY(0) rotate(0deg); opacity:1;}100%{transform:translateY(100vh) rotate(720deg); opacity:0;}}
+  .streak{display:inline-block; background:var(--yellow); color:#7a5c00; border-radius:20px; padding:2px 10px; font-size:13px; font-weight:700; margin-left:8px; animation:pop .4s;}
+  .motivation{font-size:15px; color:var(--purple); font-weight:700; margin-top:8px; min-height:20px;}
+  .hidden-word{font-size:26px; font-weight:800; color:var(--muted); letter-spacing:6px; text-align:center; padding:16px;
+    background:#f0f3fa; border-radius:14px; border:2px dashed var(--border);}
+  .reveal{color:var(--blue); border-color:var(--blue); border-style:solid;}
+  .voice-list{
+    font-size:11px; color:var(--muted); margin-top:8px; max-height:100px;
+    overflow-y:auto; background:#f7f9ff; border-radius:8px; padding:6px 10px;
+    font-family:monospace;
+  }
+  @media(max-width:600px){ .sentence{font-size:18px;} .sentence .pic{font-size:34px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="flag">🇬🇧</span>English <span>5 класс</span> — умные задания 🎓</div>
+  <div class="voice-panel">
+    🔊 Голос:
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">▶ Проверить</button>
+  </div>
+</header>
+
+<div class="voice-warn" id="voiceWarn">
+  <b>⚠️ Внимание:</b> в вашей системе не найдено «естественных» голосов (Natural / Google). Поэтому звучит старый голос Microsoft.
+  <br>Установите их: <b>Windows</b> → Параметры → Время и язык → Речь → «Добавить голоса» → русский и английский. После установки перезагрузите браузер.
+  <br>Либо используйте <b>Chrome</b> — в нём обычно уже есть «Google русский» и «Google UK English Female».
+  <div class="voice-list" id="voiceList"></div>
+</div>
+
+<div class="mic-warn" id="micWarn">
+  <b>⚠️ Ошибка микрофона: network</b>
+  <p style="margin-top:6px;">Браузер не смог связаться с сервером распознавания речи. Это <b>не проблема вашей сети</b> — чаще всего причина в одном из пунктов:</p>
+  <ul>
+    <li>Файл открыт через <code>file://</code>. Chrome <b>не даёт</b> микрофон для файлов — нужен <code>https://</code> или <code>http://localhost</code>. Без командной строки проще всего залить папку на <b>GitHub Pages</b> — получить ссылку <code>https://…</code> и открыть её.</li>
+    <li>Браузер — не Chrome и не Edge.</li>
+    <li>Блокировщик (AdBlock, uBlock, Kaspersky Protection) или VPN режет запросы к <code>speech.googleapis.com</code>.</li>
+    <li>В вашем регионе сервис распознавания Google ограничен.</li>
+  </ul>
+  <p style="margin-top:8px;"><b>Урок можно продолжать без микрофона:</b> нажимайте на кнопки вариантов или вводите ответ с клавиатуры — всё работает.</p>
+  <button class="dismiss" onclick="document.getElementById('micWarn').classList.remove('show')">Понятно, продолжить без микрофона</button>
+</div>
+
+<main id="app"></main>
+
+<script>
+/* ================================================================
+   ДАННЫЕ
+   ================================================================ */
+const DATA = {
+  topics: [
+    {
+      id: "present", title: "Present Simple / Continuous", icon: "⏰", desc: "Настоящее простое и длительное",
+      exercises: [{
+        type: "choice", title: "Present Simple vs Present Continuous",
+        instruction: "Выбери правильную форму. Нажми на вариант, скажи номер или введи с клавиатуры.",
+        items: [
+          { sentence: "She usually ___ to school by bus.", options: ["goes", "is going", "go"], answer: "goes", pic: "🚌" },
+          { sentence: "Look! The children ___ in the garden.", options: ["play", "are playing", "plays"], answer: "are playing", pic: "🧒" },
+          { sentence: "I ___ my homework every evening.", options: ["do", "am doing", "does"], answer: "do", pic: "📚" },
+          { sentence: "Listen! Somebody ___ the piano.", options: ["plays", "is playing", "play"], answer: "is playing", pic: "🎹" },
+          { sentence: "My dad ___ coffee in the morning.", options: ["drinks", "is drinking", "drink"], answer: "drinks", pic: "☕" },
+          { sentence: "We ___ to the cinema now.", options: ["go", "are going", "goes"], answer: "are going", pic: "🎬" },
+          { sentence: "Tom ___ TV at the moment.", options: ["watches", "is watching", "watch"], answer: "is watching", pic: "📺" },
+          { sentence: "They never ___ late for school.", options: ["are", "is", "come"], answer: "come", pic: "🏫" },
+          { sentence: "What ___ you doing now?", options: ["do", "are", "is"], answer: "are", pic: "❓" },
+          { sentence: "He ___ his teeth twice a day.", options: ["brushes", "is brushing", "brush"], answer: "brushes", pic: "🪥" },
+          { sentence: "It ___ outside. Take an umbrella!", options: ["rains", "is raining", "rain"], answer: "is raining", pic: "🌧️" },
+          { sentence: "My sister ___ English very well.", options: ["speaks", "is speaking", "speak"], answer: "speaks", pic: "🗣️" }
+        ]
+      }]
+    },
+    {
+      id: "past", title: "Past Simple", icon: "⏳", desc: "Прошедшее простое",
+      exercises: [
+        {
+          type: "choice", title: "Past Simple: правильные глаголы",
+          instruction: "Поставь глагол в Past Simple. Нажми на вариант, скажи номер или введи с клавиатуры.",
+          items: [
+            { sentence: "Yesterday I ___ my grandmother.", options: ["visit", "visited", "visiting"], answer: "visited", pic: "👵" },
+            { sentence: "She ___ TV last night.", options: ["watch", "watched", "watching"], answer: "watched", pic: "📺" },
+            { sentence: "We ___ football two days ago.", options: ["play", "played", "playing"], answer: "played", pic: "⚽" },
+            { sentence: "They ___ to the park last Sunday.", options: ["walk", "walked", "walking"], answer: "walked", pic: "🌳" },
+            { sentence: "He ___ his room yesterday.", options: ["clean", "cleaned", "cleaning"], answer: "cleaned", pic: "🧹" },
+            { sentence: "I ___ my homework an hour ago.", options: ["finish", "finished", "finishing"], answer: "finished", pic: "📝" },
+            { sentence: "The children ___ in the yard last evening.", options: ["play", "played", "playing"], answer: "played", pic: "🧒" }
+          ]
+        },
+        {
+          type: "choice", title: "Past Simple: неправильные глаголы",
+          instruction: "Выбери правильную форму неправильного глагола.",
+          items: [
+            { sentence: "I ___ to school yesterday.", options: ["go", "went", "goed"], answer: "went", pic: "🏫" },
+            { sentence: "She ___ a big cake last week.", options: ["make", "made", "maked"], answer: "made", pic: "🎂" },
+            { sentence: "We ___ a film last night.", options: ["see", "saw", "seed"], answer: "saw", pic: "🎬" },
+            { sentence: "He ___ his keys yesterday.", options: ["lose", "lost", "losed"], answer: "lost", pic: "🔑" },
+            { sentence: "They ___ breakfast at 8 o'clock.", options: ["have", "had", "haved"], answer: "had", pic: "🍳" },
+            { sentence: "My mum ___ a letter last Monday.", options: ["write", "wrote", "writed"], answer: "wrote", pic: "✉️" },
+            { sentence: "I ___ a new bicycle for my birthday.", options: ["get", "got", "getted"], answer: "got", pic: "🚲" },
+            { sentence: "She ___ her homework before dinner.", options: ["do", "did", "doed"], answer: "did", pic: "📖" },
+            { sentence: "We ___ in the river last summer.", options: ["swim", "swam", "swimmed"], answer: "swam", pic: "🏊" },
+            { sentence: "He ___ me a funny story yesterday.", options: ["tell", "told", "telled"], answer: "told", pic: "😄" }
+          ]
+        },
+        {
+          type: "choice", title: "Past Simple: вопросы и отрицания",
+          instruction: "Выбери правильную форму для вопроса или отрицания.",
+          items: [
+            { sentence: "___ you go to the cinema yesterday?", options: ["Do", "Did", "Does"], answer: "Did", pic: "🎬" },
+            { sentence: "I ___ like the film last night.", options: ["don't", "didn't", "doesn't"], answer: "didn't", pic: "👎" },
+            { sentence: "___ she visit her aunt last week?", options: ["Do", "Did", "Does"], answer: "Did", pic: "👩" },
+            { sentence: "He ___ come to school yesterday.", options: ["don't", "didn't", "doesn't"], answer: "didn't", pic: "🚫" },
+            { sentence: "___ they play football two days ago?", options: ["Do", "Did", "Are"], answer: "Did", pic: "⚽" },
+            { sentence: "We ___ watch TV last evening.", options: ["don't", "didn't", "doesn't"], answer: "didn't", pic: "📺" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "comparatives", title: "Степени сравнения", icon: "📏", desc: "taller, the tallest, better, worse",
+      exercises: [{
+        type: "choice", title: "Сравнительная и превосходная степень",
+        instruction: "Выбери правильную форму прилагательного.",
+        items: [
+          { sentence: "My brother is ___ than me.", options: ["tall", "taller", "the tallest"], answer: "taller", pic: "🧍" },
+          { sentence: "This is ___ book in the library.", options: ["interesting", "more interesting", "the most interesting"], answer: "the most interesting", pic: "📚" },
+          { sentence: "Today is ___ than yesterday.", options: ["cold", "colder", "the coldest"], answer: "colder", pic: "🥶" },
+          { sentence: "She is ___ pupil in our class.", options: ["good", "better", "the best"], answer: "the best", pic: "🏆" },
+          { sentence: "This film is ___ than that one.", options: ["bad", "worse", "the worst"], answer: "worse", pic: "👎" },
+          { sentence: "An elephant is ___ than a horse.", options: ["big", "bigger", "the biggest"], answer: "bigger", pic: "🐘" },
+          { sentence: "It is ___ day of the year.", options: ["hot", "hotter", "the hottest"], answer: "the hottest", pic: "🔥" },
+          { sentence: "My bag is ___ than yours.", options: ["heavy", "heavier", "the heaviest"], answer: "heavier", pic: "🎒" },
+          { sentence: "He is ___ runner in our school.", options: ["fast", "faster", "the fastest"], answer: "the fastest", pic: "🏃" },
+          { sentence: "This exercise is ___ than the last one.", options: ["difficult", "more difficult", "the most difficult"], answer: "more difficult", pic: "🧩" }
+        ]
+      }]
+    },
+    {
+      id: "quantifiers", title: "Some / Any / Much / Many", icon: "🧮", desc: "Количественные слова",
+      exercises: [{
+        type: "choice", title: "Some / any / much / many",
+        instruction: "Выбери правильное слово.",
+        items: [
+          { sentence: "I have ___ apples in my bag.", options: ["some", "any", "much"], answer: "some", pic: "🍎" },
+          { sentence: "Do you have ___ milk?", options: ["some", "any", "many"], answer: "any", pic: "🥛" },
+          { sentence: "There are ___ books on the shelf.", options: ["much", "many", "a"], answer: "many", pic: "📚" },
+          { sentence: "I don't have ___ time.", options: ["some", "any", "many"], answer: "any", pic: "⏰" },
+          { sentence: "How ___ sugar do you want?", options: ["many", "much", "any"], answer: "much", pic: "🍬" },
+          { sentence: "There isn't ___ water in the bottle.", options: ["some", "any", "many"], answer: "any", pic: "💧" },
+          { sentence: "How ___ students are in your class?", options: ["much", "many", "any"], answer: "many", pic: "👥" },
+          { sentence: "Would you like ___ tea?", options: ["some", "any", "many"], answer: "some", pic: "🍵" },
+          { sentence: "We have ___ homework today.", options: ["many", "much", "a"], answer: "much", pic: "📝" },
+          { sentence: "Are there ___ chairs in the room?", options: ["some", "any", "much"], answer: "any", pic: "🪑" }
+        ]
+      }]
+    },
+    {
+      id: "prepositions", title: "Предлоги времени и места", icon: "📍", desc: "in, on, at, under, behind, between",
+      exercises: [
+        {
+          type: "choice", title: "Предлоги времени: in / on / at",
+          instruction: "Выбери правильный предлог времени.",
+          items: [
+            { sentence: "My birthday is ___ May.", options: ["in", "on", "at"], answer: "in", pic: "🎂" },
+            { sentence: "The lesson starts ___ 9 o'clock.", options: ["in", "on", "at"], answer: "at", pic: "🕘" },
+            { sentence: "We have English ___ Monday.", options: ["in", "on", "at"], answer: "on", pic: "📅" },
+            { sentence: "It is very hot ___ summer.", options: ["in", "on", "at"], answer: "in", pic: "☀️" },
+            { sentence: "Christmas is ___ December 25th.", options: ["in", "on", "at"], answer: "on", pic: "🎄" },
+            { sentence: "I get up ___ 7 o'clock every day.", options: ["in", "on", "at"], answer: "at", pic: "⏰" },
+            { sentence: "We go to the seaside ___ August.", options: ["in", "on", "at"], answer: "in", pic: "🏖️" },
+            { sentence: "The film starts ___ 6 p.m.", options: ["in", "on", "at"], answer: "at", pic: "🎬" }
+          ]
+        },
+        {
+          type: "choice", title: "Предлоги места",
+          instruction: "Выбери правильный предлог места.",
+          items: [
+            { sentence: "The cat is ___ the table.", options: ["on", "in", "under"], answer: "on", pic: "🐱" },
+            { sentence: "The dog is ___ the box.", options: ["on", "in", "under"], answer: "in", pic: "🐶" },
+            { sentence: "The ball is ___ the chair.", options: ["on", "under", "behind"], answer: "under", pic: "⚽" },
+            { sentence: "The teacher is ___ the blackboard.", options: ["behind", "under", "in"], answer: "behind", pic: "👩‍🏫" },
+            { sentence: "The school is ___ the park and the shop.", options: ["between", "under", "on"], answer: "between", pic: "🏫" },
+            { sentence: "The bus stop is ___ the library.", options: ["next to", "under", "in"], answer: "next to", pic: "🚌" },
+            { sentence: "The boy is hiding ___ the door.", options: ["behind", "on", "between"], answer: "behind", pic: "🚪" },
+            { sentence: "There is a mirror ___ the bathroom.", options: ["in", "on", "under"], answer: "in", pic: "🪞" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "pronouns", title: "Местоимения", icon: "👤", desc: "I, me, my, mine",
+      exercises: [{
+        type: "choice", title: "Личные и притяжательные местоимения",
+        instruction: "Выбери правильное местоимение.",
+        items: [
+          { sentence: "This is ___ book. It is mine.", options: ["I", "my", "me"], answer: "my", pic: "📕" },
+          { sentence: "Give the pen to ___.", options: ["I", "me", "my"], answer: "me", pic: "🖊️" },
+          { sentence: "___ is my best friend.", options: ["She", "Her", "Hers"], answer: "She", pic: "👧" },
+          { sentence: "This ball is ___.", options: ["he", "him", "his"], answer: "his", pic: "⚽" },
+          { sentence: "We like ___ teacher.", options: ["we", "our", "us"], answer: "our", pic: "👩‍🏫" },
+          { sentence: "Can you help ___?", options: ["they", "them", "their"], answer: "them", pic: "🤝" },
+          { sentence: "___ dog is very funny.", options: ["They", "Their", "Them"], answer: "Their", pic: "🐕" },
+          { sentence: "This is not my bag. It is ___.", options: ["you", "your", "yours"], answer: "yours", pic: "🎒" }
+        ]
+      }]
+    },
+    {
+      id: "there", title: "There is / There are", icon: "🏠", desc: "Оборот there is / there are",
+      exercises: [{
+        type: "choice", title: "There is / There are",
+        instruction: "Выбери правильную форму оборота.",
+        items: [
+          { sentence: "___ a cat under the table.", options: ["There is", "There are", "There be"], answer: "There is", pic: "🐱" },
+          { sentence: "___ five books on the shelf.", options: ["There is", "There are", "There be"], answer: "There are", pic: "📚" },
+          { sentence: "___ any milk in the fridge?", options: ["Is there", "Are there", "There is"], answer: "Is there", pic: "🥛" },
+          { sentence: "___ many pupils in the classroom.", options: ["There is", "There are", "There be"], answer: "There are", pic: "👥" },
+          { sentence: "___ a big park near my house.", options: ["There is", "There are", "There be"], answer: "There is", pic: "🌳" },
+          { sentence: "___ any apples in the bag?", options: ["Is there", "Are there", "There is"], answer: "Are there", pic: "🍎" },
+          { sentence: "___ a computer on the desk.", options: ["There is", "There are", "There be"], answer: "There is", pic: "💻" },
+          { sentence: "___ two windows in my room.", options: ["There is", "There are", "There be"], answer: "There are", pic: "🪟" }
+        ]
+      }]
+    },
+    {
+      id: "wordsearch", title: "Поиск слов", icon: "🔤", desc: "10 на 10: диктуй координаты",
+      exercises: [
+        {
+          type: "wordsearch", title: "Школьные слова",
+          instruction: "Среди букв спрятаны слова. Назови координаты начала и конца слова, например B2 и B6, или щёлкни по клеткам.",
+          words: ["SCHOOL", "PENCIL", "RULER", "BOOK", "DESK", "BAG", "PEN", "DOOR", "WINDOW", "ENGLISH"]
+        },
+        {
+          type: "wordsearch", title: "Животные",
+          instruction: "Найди всех животных. Диктуй координаты начала и конца слова или щёлкай мышью.",
+          words: ["CAT", "DOG", "FISH", "BIRD", "HORSE", "MOUSE", "TIGER", "BEAR"]
+        }
+      ]
+    },
+    {
+      id: "calendar", title: "Календарь", icon: "📅", desc: "Школьные события и даты",
+      exercises: [{
+        type: "calendar", title: "События месяца",
+        instruction: "Нажми на день с событием или скажи слово событие — услышишь, что произойдёт.",
+        events: [
+          { d: 3,  t: "Контрольная по английскому" },
+          { d: 7,  t: "Вечер кино" },
+          { d: 12, t: "День грамматики" },
+          { d: 18, t: "Разговорный клуб" },
+          { d: 24, t: "День викторины" },
+          { d: 28, t: "Повторение" }
+        ]
+      }]
+    },
+    {
+      id: "truefalse", title: "Правда или ложь", icon: "❓", desc: "True or False",
+      exercises: [{
+        type: "truefalse", title: "True or False",
+        instruction: "Скажи правда или ложь, или нажми на кнопку.",
+        items: [
+          { s: "The sun rises in the east.", a: true, pic: "🌅" },
+          { s: "Cats can fly.", a: false, pic: "🐱" },
+          { s: "Water boils at 100 degrees.", a: true, pic: "💧" },
+          { s: "A week has 10 days.", a: false, pic: "📅" },
+          { s: "London is the capital of the UK.", a: true, pic: "🇬🇧" },
+          { s: "Penguins live in Africa.", a: false, pic: "🐧" },
+          { s: "The Earth is round.", a: true, pic: "🌍" },
+          { s: "Ice is hot.", a: false, pic: "🧊" },
+          { s: "There are 60 minutes in an hour.", a: true, pic: "⏰" },
+          { s: "A triangle has four sides.", a: false, pic: "🔺" },
+          { s: "The Amazon is the longest river in the world.", a: false, pic: "🌊" },
+          { s: "Moscow is the capital of Russia.", a: true, pic: "🇷🇺" }
+        ]
+      }]
+    },
+    {
+      id: "spelling", title: "Правописание на слух", icon: "🔊", desc: "Услышь слово и собери его",
+      exercises: [{
+        type: "spelling", title: "Spelling by Ear",
+        instruction: "Слушай слово и собирай его из букв. Скажи повтори, чтобы услышать ещё раз.",
+        words: ["SCHOOL", "FRIEND", "ORANGE", "WINTER", "FAMILY", "GARDEN", "PICTURE", "TEACHER", "ANIMAL"]
+      }]
+    },
+    {
+      id: "numbers", title: "Числа 1–100", icon: "🔢", desc: "Услышь число и выбери его",
+      exercises: [{
+        type: "numbers", title: "Numbers 1–100",
+        instruction: "Услышь английское число и нажми на правильную цифру. Скажи повтори, чтобы услышать снова.",
+        count: 10
+      }]
+    }
+  ]
+};
+</script>
+
+<script>
+/* ==================== ДВИЖОК ==================== */
+const app = document.getElementById('app');
+const state = { topic:null, ex:null, itemIdx:0, score:0, streak:0, found:[], grid:null, placement:null, selCells:[], numCur:null, numIdx:0, spellCur:null, spellTyped:"", spellIdx:0 };
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null, listening = false, voiceHandler = null;
+
+function norm(s){ return s.toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+function setHeard(html){ const el = document.getElementById('heard'); if (el) el.innerHTML = html; }
+
+/* ================================================================
+   ГОЛОС
+   ================================================================ */
+let allVoices = [];
+let chosenRu = null, chosenEn = null;
+
+const RU_PRIORITY = ['Microsoft Pavel','Microsoft Svetlana Online (Natural)','Microsoft Dariya Online (Natural)','Microsoft Dmitry Online (Natural)','Google русский','Microsoft Irina','Microsoft Katya','Milena','Yuri'];
+const EN_PRIORITY = ['Microsoft David','Microsoft Aria Online (Natural)','Microsoft Jenny Online (Natural)','Microsoft Guy Online (Natural)','Google UK English Female','Google US English','Samantha','Karen','Daniel','Microsoft Zira','Microsoft Hazel','Alex'];
+const GOOD_RE = /natural|online|google|premium|enhanced|samantha|karen|daniel|aria|jenny|guy|svetlana|dariya|dmitry|pavel|david/i;
+
+function refreshVoices(){
+  if (!window.speechSynthesis) return;
+  const v = speechSynthesis.getVoices();
+  if (!v || !v.length) return;
+  allVoices = v;
+  const ru = allVoices.filter(x => x.lang.toLowerCase().startsWith('ru'));
+  chosenRu = pickByPriority(ru, RU_PRIORITY) || ru[0] || null;
+  const en = allVoices.filter(x => x.lang.toLowerCase().startsWith('en'));
+  chosenEn = pickByPriority(en, EN_PRIORITY) || en[0] || null;
+  buildVoiceSelect();
+  checkVoiceQuality();
+}
+function pickByPriority(list, priority){
+  for (const name of priority){ const f = list.find(v => v.name === name || v.name.includes(name)); if (f) return f; }
+  return list.find(v => GOOD_RE.test(v.name)) || list.find(v => !/compact|robot|espeak/i.test(v.name)) || list[0] || null;
+}
+function buildVoiceSelect(){
+  const sel = document.getElementById('voiceSelect'); if (!sel) return;
+  const prev = sel.value; sel.innerHTML = '';
+  const groups = {
+    '🇷🇺 Русские': allVoices.filter(v => v.lang.toLowerCase().startsWith('ru')),
+    '🇬🇧 Английские': allVoices.filter(v => v.lang.toLowerCase().startsWith('en'))
+  };
+  for (const [label, list] of Object.entries(groups)){
+    if (!list.length) continue;
+    const og = document.createElement('optgroup'); og.label = label;
+    list.forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v.name + '|' + v.lang;
+      const good = GOOD_RE.test(v.name) ? ' ⭐' : '';
+      opt.textContent = v.name + ' (' + v.lang + ')' + good;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  }
+  if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+  else {
+    const best = chosenRu || chosenEn;
+    if (best && [...sel.options].some(o => o.value === best.name + '|' + best.lang)) sel.value = best.name + '|' + best.lang;
+    else if (sel.options.length) sel.selectedIndex = 0;
+  }
+}
+function checkVoiceQuality(){
+  const warn = document.getElementById('voiceWarn');
+  const list = document.getElementById('voiceList');
+  if (!warn || !list) return;
+  const hasGood = allVoices.some(v => GOOD_RE.test(v.name) && /^(ru|en)/i.test(v.lang));
+  warn.classList.toggle('show', !hasGood);
+  const lines = allVoices.map(v => {
+    const good = GOOD_RE.test(v.name) ? ' ⭐' : '';
+    return `• ${v.name} — ${v.lang}${good}`;
+  }).join('<br>');
+  list.innerHTML = '<b>Найдено голосов: ' + allVoices.length + '</b><br>' + (lines || 'нет');
+}
+function currentVoiceForLang(lang){
+  const sel = document.getElementById('voiceSelect');
+  if (sel && sel.value){
+    const [name, l] = sel.value.split('|');
+    const v = allVoices.find(x => x.name === name && x.lang === l);
+    if (v) return v;
+  }
+  if (lang.startsWith('ru')) return chosenRu;
+  return chosenEn;
+}
+if (window.speechSynthesis){
+  refreshVoices();
+  speechSynthesis.onvoiceschanged = () => refreshVoices();
+  setTimeout(refreshVoices, 300);
+  setTimeout(refreshVoices, 1000);
+  setTimeout(refreshVoices, 2500);
+}
+
+const EMOJI_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}]/gu;
+function cleanForSpeech(text){
+  return text.replace(EMOJI_RE, '').replace(/[⭐★☆✓✔✗✘♪♫❤♥♦♣♠]/g, '').replace(/\s+/g, ' ').trim();
+}
+let speakingQueue = Promise.resolve();
+function speak(text, lang){
+  if (!window.speechSynthesis) return;
+  const clean = cleanForSpeech(text); if (!clean) return;
+  speakingQueue = speakingQueue.then(() => new Promise(resolve => {
+    const u = new SpeechSynthesisUtterance(clean);
+    u.lang = lang || 'ru-RU';
+    const v = currentVoiceForLang(u.lang); if (v) u.voice = v;
+    u.rate = 0.95; u.pitch = 1.0; u.volume = 1;
+    u.onend = resolve; u.onerror = resolve;
+    speechSynthesis.speak(u);
+  }));
+}
+function speakRu(t){ speak(t, 'ru-RU'); }
+function speakEn(t){ speak(t, 'en-US'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('testVoice');
+  if (btn){
+    btn.onclick = () => {
+      const sel = document.getElementById('voiceSelect');
+      if (!sel || !sel.value){ speakRu('Голос не выбран'); return; }
+      const [name, l] = sel.value.split('|');
+      const v = allVoices.find(x => x.name === name && x.lang === l);
+      const isRu = v && v.lang.toLowerCase().startsWith('ru');
+      const sample = isRu ? 'Привет! Это проверка голоса для занятий английским. 😊 👍' : 'Hello! This is a voice test for English lessons. 😊 👍';
+      const clean = cleanForSpeech(sample);
+      const u = new SpeechSynthesisUtterance(clean);
+      u.voice = v || null; u.lang = l; u.rate = 0.95; u.pitch = 1.0;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    };
+  }
+});
+
+/* ============ МИКРОФОН ============ */
+function showMicError(err){
+  const warn = document.getElementById('micWarn');
+  if (warn) warn.classList.add('show');
+  setHeard('⚠️ Ошибка микрофона: ' + err + '. Используйте кнопки или клавиатуру.');
+}
+function startMic(handler){
+  if (!SR){ showMicError('API не поддерживается'); return; }
+  if (location.protocol === 'file:'){ showMicError('file:// — нужен https или localhost'); return; }
+  voiceHandler = handler;
+  try { recog = new SR(); } catch(e){ showMicError('не удалось создать распознаватель'); return; }
+  recog.lang = 'ru-RU';
+  recog.interimResults = false;
+  recog.maxAlternatives = 3;
+  recog.onstart = () => { listening = true; updateMicUI(true); };
+  recog.onend = () => { listening = false; updateMicUI(false); };
+  recog.onerror = (e) => {
+    listening = false; updateMicUI(false);
+    const err = e.error || 'unknown';
+    if (err === 'network') showMicError('network');
+    else if (err === 'not-allowed' || err === 'service-not-allowed') setHeard('⚠️ Доступ к микрофону запрещён. Разрешите его в настройках браузера.');
+    else if (err === 'no-speech') setHeard('🤔 Речь не распознана. Попробуйте ещё раз.');
+    else showMicError(err);
+  };
+  recog.onresult = (e) => {
+    const alts = Array.from(e.results[0]).map(a => a.transcript);
+    setHeard('Распознано: <b>' + alts.map(a=>a.trim()).join(' / ') + '</b>');
+    if (voiceHandler) voiceHandler(alts);
+  };
+  try { recog.start(); } catch(e){ showMicError('не удалось запустить'); }
+}
+function updateMicUI(on){ document.querySelectorAll('.mic-btn').forEach(b => b.classList.toggle('listening', on)); }
+
+/* ============ КРЕАТИВ ============ */
+function confetti(n){
+  const colors = ['#4f7cff','#2fbf71','#ffc93c','#e05252','#8b5cf6','#ff8fab'];
+  for (let i=0;i<(n||30);i++){
+    const d = document.createElement('div');
+    d.className = 'confetti';
+    d.style.left = Math.random()*100 + 'vw';
+    d.style.top = '-20px';
+    d.style.background = colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration = (1 + Math.random()*0.8) + 's';
+    d.style.borderRadius = Math.random() < 0.5 ? '50%' : '2px';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(), 2000);
+  }
+}
+function beep(freq, dur){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; o.type = 'sine';
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  }catch(e){}
+}
+function soundOk(){ beep(880, 0.12); setTimeout(()=>beep(1320, 0.15), 120); }
+function soundBad(){ beep(220, 0.2); }
+function motivate(){
+  const list = ['Отлично!','Супер!','Так держать!','Молодец!','Хорошая работа!','Верно!'];
+  return list[Math.floor(Math.random()*list.length)];
+}
+
+/* ============ ПАНЕЛЬ ОТВЕТА ============ */
+function answerBar(){
+  return `
+    <div class="answer-bar">
+      <button class="mic-btn" id="micBtn" title="Сказать номер ответа">🎤</button>
+      <input id="typedAnswer" type="text" placeholder="…или введи ответ с клавиатуры" autocomplete="off">
+      <button class="btn blue" id="checkBtn">Проверить</button>
+    </div>
+    <div class="heard" id="heard"></div>
+    <div class="hint">🎙️ Микрофон работает в Chrome или Edge. Разрешите доступ, когда браузер спросит. Если видите ошибку network — нажимайте кнопки или вводите с клавиатуры.</div>`;
+}
+function bindAnswerBar(onSubmit, onVoice){
+  const btn = document.getElementById('micBtn');
+  if (btn) btn.onclick = () => { if (!listening) startMic(onVoice); };
+  const check = document.getElementById('checkBtn');
+  const input = document.getElementById('typedAnswer');
+  const submit = () => { const v = input.value.trim(); if (v) onSubmit([v]); };
+  if (check) check.onclick = submit;
+  if (input) input.onkeydown = e => { if (e.key === 'Enter') submit(); };
+}
+function progressHTML(total, done, score, streak){
+  const s = streak ? `<span class="streak">🔥 Серия: ${streak}</span>` : '';
+  return `<div class="progress-wrap">
+    <div class="progress"><div style="width:${total ? Math.round(done/total*100) : 0}%"></div></div>
+    <div class="score">⭐ Баллы: ${score}${s}</div></div>`;
+}
+
+/* ==================== ГЛАВНЫЙ ЭКРАН ==================== */
+function showHome(){
+  state.topic = null; state.ex = null;
+  app.innerHTML = `
+    <div class="card">
+      <h1>👋 Выбери раздел</h1>
+      <p class="sub">Задания для 5 класса. Отвечай голосом (называй номер варианта), мышью или с клавиатуры.</p>
+      <div class="topic-grid">
+        ${DATA.topics.map((t,i)=>`
+          <div class="topic" onclick="openTopic(${i})">
+            <div class="ico">${t.icon}</div>
+            <b>${t.title}</b>
+            <small>${t.desc}</small><br>
+            <span class="badge">${t.exercises.length} заданий</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function openTopic(i){
+  const t = DATA.topics[i]; state.topic = i;
+  app.innerHTML = `
+    <div class="card">
+      <button class="nav-btn" onclick="showHome()">← Назад к разделам</button>
+      <h1 style="margin-top:14px;">${t.icon} ${t.title}</h1>
+      <p class="sub">${t.desc}</p>
+      <div class="ex-list">
+        ${t.exercises.map((e,j)=>`
+          <div class="ex-item" onclick="openExercise(${i},${j})">
+            <div><b>${j+1}. ${e.title}</b><br><small class="sub" style="margin:0">${e.instruction}</small></div>
+            <span class="go">Открыть →</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function openExercise(i, j){
+  const e = DATA.topics[i].exercises[j];
+  state.ex = { i, j };
+  state.itemIdx = 0; state.score = 0; state.streak = 0; state.found = [];
+  state.selCells = []; state.numIdx = 0; state.spellIdx = 0; state.spellTyped = "";
+  if (e.type === 'choice') renderChoice();
+  else if (e.type === 'wordsearch'){ buildGrid(e); renderWordSearch(); }
+  else if (e.type === 'calendar') renderCalendar();
+  else if (e.type === 'truefalse') renderTF();
+  else if (e.type === 'spelling') renderSpelling();
+  else if (e.type === 'numbers') renderNumbers();
+}
+
+/* ==================== CHOICE ==================== */
+function renderChoice(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const total = e.items.length;
+  if (state.itemIdx >= total){ renderResult(total); return; }
+  const it = e.items[state.itemIdx];
+  const sentence = it.sentence.replace('___', '<span class="blank" id="blank">?</span>');
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="nav-btn" onclick="prevChoice()" ${state.itemIdx === 0 ? 'disabled' : ''}>← Назад</button>
+        <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-left:auto;">← К заданиям</button>
+      </div>
+      <h2>${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      ${progressHTML(total, state.itemIdx, state.score, state.streak)}
+      <div class="sentence">
+        <span class="pic">${it.pic || '📝'}</span>
+        <span class="text">${sentence}</span>
+      </div>
+      <div class="voice-hint">
+        <span class="ico">💡</span>
+        <span><b>Как отвечать голосом:</b> скажи <b>«первый»</b>, <b>«второй»</b> или <b>«третий»</b> — программа выберет вариант по номеру. Можно нажать на кнопку или ввести слово с клавиатуры.</span>
+      </div>
+      <div class="options" id="opts">
+        ${it.options.map((o,i)=>`<button class="opt" data-v="${o}" data-idx="${i}"><span class="num">${i+1}</span>${o}</button>`).join('')}
+      </div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="motivation" id="motiv"></div>
+      <div class="controls"><button class="btn gray" id="skipBtn">⏭️ Пропустить</button></div>
+    </div>`;
+  document.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => checkChoice(b.dataset.v, b));
+  document.getElementById('skipBtn').onclick = () => { state.itemIdx++; state.streak = 0; renderChoice(); };
+  bindAnswerBar(alts => handleChoiceVoice(alts), alts => handleChoiceVoice(alts));
+}
+function prevChoice(){ if (state.itemIdx > 0){ state.itemIdx--; state.streak = 0; renderChoice(); } }
+function handleChoiceVoice(alts){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const it = e.items[state.itemIdx];
+  const ORD = {'первый':0,'первое':0,'1':0,'один':0,'одна':0,'one':0,'first':0,'второй':1,'второе':1,'2':1,'два':1,'две':1,'two':1,'second':1,'третий':2,'третье':2,'3':2,'три':2,'three':2,'third':2,'четвертый':3,'четвёртый':3,'4':3,'четыре':3,'four':3,'fourth':3};
+  for (let raw of alts){
+    const t = norm(raw);
+    for (const [word, idx] of Object.entries(ORD)){
+      if (t === word || t.split(' ').includes(word)){
+        if (it.options[idx] !== undefined){ checkChoice(it.options[idx], null); return; }
+      }
+    }
+    for (const o of it.options) if (norm(o) === t){ checkChoice(o, null); return; }
+  }
+  setHeard('Скажи номер варианта: первый, второй или третий. Или нажми на кнопку.');
+}
+function checkChoice(val, btnEl){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const it = e.items[state.itemIdx];
+  const blank = document.getElementById('blank');
+  const fb = document.getElementById('fb');
+  const mot = document.getElementById('motiv');
+  const ok = norm(val) === norm(it.answer);
+  document.querySelectorAll('#opts .opt').forEach(b => {
+    if (norm(b.dataset.v) === norm(it.answer)) b.classList.add('ok');
+    else if (btnEl && b === btnEl) b.classList.add('bad');
+  });
+  blank.textContent = val; blank.classList.add('filled', ok ? 'ok' : 'bad');
+  if (ok){
+    state.score++; state.streak++;
+    fb.textContent = '✅ Верно!'; fb.className = 'feedback ok';
+    mot.textContent = '🎉 ' + motivate(); confetti(20); soundOk();
+    speakEn(it.answer);
+  } else {
+    state.streak = 0;
+    fb.textContent = '❌ Неверно. Правильный ответ: ' + it.answer; fb.className = 'feedback bad';
+    soundBad(); speakRu('Правильный ответ: ' + it.answer);
+  }
+  document.querySelectorAll('#opts .opt').forEach(b => b.onclick = null);
+  setTimeout(() => { state.itemIdx++; renderChoice(); }, 1800);
+}
+
+/* ==================== WORDSEARCH ==================== */
+const SIZE = 10;
+function buildGrid(e){
+  const grid = Array.from({length:SIZE}, () => Array(SIZE).fill(''));
+  const dirs = [[1,0],[0,1],[1,1]]; const placed = {};
+  for (const word of e.words){
+    let done = false;
+    for (let a = 0; a < 400 && !done; a++){
+      const d = dirs[Math.floor(Math.random()*dirs.length)];
+      const rev = Math.random() < 0.5;
+      const w = rev ? word.split('').reverse().join('') : word;
+      const row = Math.floor(Math.random()*(SIZE - (d[0]? w.length-1 : 0)));
+      const col = Math.floor(Math.random()*(SIZE - (d[1]? w.length-1 : 0)));
+      let fits = true;
+      for (let k = 0; k < w.length; k++){
+        const r = row + d[0]*k, c = col + d[1]*k;
+        if (grid[r][c] && grid[r][c] !== w[k]){ fits = false; break; }
+      }
+      if (fits){
+        const cells = [];
+        for (let k = 0; k < w.length; k++){
+          const r = row + d[0]*k, c = col + d[1]*k;
+          grid[r][c] = w[k]; cells.push({row:r+1, col:c+1});
+        }
+        placed[word] = cells; done = true;
+      }
+    }
+  }
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++)
+    if (!grid[r][c]) grid[r][c] = letters[Math.floor(Math.random()*26)];
+  state.grid = grid; state.placement = placed;
+}
+function cellId(c){ return c.row + '-' + c.col; }
+function renderWordSearch(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const total = Object.keys(state.placement).length;
+  let head = '<tr><th></th>' + Array.from({length:SIZE},(_,i)=>`<th>${String.fromCharCode(65+i)}</th>`).join('') + '</tr>';
+  let rows = '';
+  for (let r = 0; r < SIZE; r++){
+    rows += `<tr><th>${r+1}</th>` + Array.from({length:SIZE},(_,c)=>
+      `<td id="c${r+1}-${c+1}" data-r="${r+1}" data-c="${c+1}">${state.grid[r][c]}</td>`).join('') + '</tr>';
+  }
+  app.innerHTML = `
+    <div class="card">
+      <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-bottom:14px;">← К заданиям</button>
+      <h2>🔤 ${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      ${progressHTML(total, state.found.length, state.found.length, 0)}
+      <div class="ws-layout">
+        <div class="ws-grid-wrap"><table class="ws">${head}${rows}</table></div>
+        <div>
+          <div class="words-list">${e.words.map(w=>`<span class="word-chip" id="w-${w}">${w}</span>`).join('')}</div>
+          <div class="controls">
+            <button class="btn gray" id="clearSel">↩️ Сбросить</button>
+            <button class="btn" id="newGrid">🔄 Новое поле</button>
+          </div>
+        </div>
+      </div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="motivation" id="motiv"></div>
+      <div class="hint">🎯 Скажи координату: B7 или 7 B. Первый ответ — начало, второй — конец.</div>
+    </div>`;
+  document.querySelectorAll('table.ws td').forEach(td => td.onclick = () => selectCell({row:+td.dataset.r, col:+td.dataset.c}));
+  document.getElementById('clearSel').onclick = clearSelection;
+  document.getElementById('newGrid').onclick = () => { buildGrid(e); state.found = []; state.selCells = []; renderWordSearch(); };
+  bindAnswerBar(alts => handleWsVoice(alts), alts => handleWsVoice(alts));
+  paintSelection();
+}
+function handleWsVoice(alts){
+  for (let raw of alts){
+    const cell = parseCell(raw);
+    if (cell){ setHeard(`🎯 Клетка <b>${String.fromCharCode(64+cell.col)}${cell.row}</b>`); selectCell(cell); return; }
+  }
+  setHeard('🤔 Координаты не распознаны. Скажи B7 или 7 B.');
+}
+function parseCell(text){
+  const t = ' ' + norm(text) + ' ';
+  let letter = null, num = null;
+  const m = t.match(/(?:^|\s)([a-j])(?=\s|$)/i);
+  if (m) letter = m[1].toUpperCase().charCodeAt(0) - 64;
+  const ru = {'бэ':2,'би':2,'си':3,'ди':4,'и':5,'эй':5,'еф':6,'джи':7,'эйч':8,'аш':9,'джей':10};
+  for (const k in ru) if (t.includes(' ' + k + ' ')) { letter = ru[k]; break; }
+  const nums = {'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'один':1,'два':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,'девять':9,'десять':10};
+  for (const w in nums){ const re = new RegExp('(?:^|\\s)' + w + '(?=\\s|$)'); if (re.test(t)){ num = nums[w]; break; } }
+  if (letter && num && num >= 1 && num <= 10) return { col: letter, row: num };
+  return null;
+}
+function clearSelection(){ state.selCells = []; paintSelection(); }
+function paintSelection(){
+  document.querySelectorAll('table.ws td').forEach(td => td.classList.remove('sel'));
+  state.selCells.forEach(c => { const el = document.getElementById(cellId(c)); if (el) el.classList.add('sel'); });
+}
+function selectCell(cell){
+  if (state.selCells.some(c => c.row === cell.row && c.col === cell.col)){
+    state.selCells = state.selCells.filter(c => !(c.row === cell.row && c.col === cell.col));
+    paintSelection(); return;
+  }
+  state.selCells.push(cell); paintSelection();
+  if (state.selCells.length === 2) setTimeout(checkWord, 250);
+}
+function checkWord(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const [a, b] = state.selCells;
+  const dr = Math.sign(b.row - a.row), dc = Math.sign(b.col - a.col);
+  const len = Math.max(Math.abs(b.row - a.row), Math.abs(b.col - a.col)) + 1;
+  const straight = (dr === 0 || dc === 0 || Math.abs(b.row - a.row) === Math.abs(b.col - a.col));
+  const fb = document.getElementById('fb'); const mot = document.getElementById('motiv');
+  if (!straight || len < 2){ fb.textContent = '❌ Выбирай клетки по прямой линии.'; fb.className = 'feedback bad'; clearSelection(); return; }
+  let word = ''; const cells = [];
+  for (let k = 0; k < len; k++){
+    const r = a.row + dr*k, c = a.col + dc*k;
+    word += state.grid[r-1][c-1]; cells.push({row:r, col:c});
+  }
+  const hit = e.words.find(w => !state.found.includes(w) && (norm(w) === norm(word) || norm(w) === norm(word.split('').reverse().join(''))));
+  if (hit){
+    state.found.push(hit);
+    cells.forEach(c => document.getElementById(cellId(c)).classList.add('found'));
+    document.getElementById('w-' + hit).classList.add('done');
+    fb.textContent = '✅ Найдено слово: ' + hit; fb.className = 'feedback ok';
+    mot.textContent = '🎉 ' + motivate(); confetti(25); soundOk();
+    speakEn(hit);
+    const bar = document.querySelector('.progress > div');
+    if (bar) bar.style.width = Math.round(state.found.length / e.words.length * 100) + '%';
+    document.querySelector('.score').textContent = '⭐ Баллы: ' + state.found.length;
+  } else {
+    fb.textContent = '❌ Здесь слово ' + word + ' — такого нет в списке.'; fb.className = 'feedback bad';
+    soundBad();
+  }
+  clearSelection();
+  if (state.found.length === e.words.length) setTimeout(() => renderResult(e.words.length), 1000);
+}
+
+/* ==================== CALENDAR ==================== */
+function renderCalendar(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  let cells = days.map(d=>`<div class="day">${d}</div>`).join('');
+  for (let i = 1; i <= 30; i++){
+    const ev = e.events.find(x => x.d === i);
+    cells += `<div class="${ev ? 'event' : ''}" data-d="${i}">${i}</div>`;
+  }
+  app.innerHTML = `
+    <div class="card">
+      <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-bottom:14px;">← К заданиям</button>
+      <h2>📅 ${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      <div class="cal-grid" id="calGrid">${cells}</div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="hint">🎯 Скажи событие — узнаешь случайное событие. Или нажми на день.</div>
+    </div>`;
+  document.querySelectorAll('#calGrid .event').forEach(d => d.onclick = () => {
+    const ev = e.events.find(x => x.d === +d.dataset.d);
+    showEvent(ev);
+  });
+  bindAnswerBar(alts => {
+    for (let raw of alts){
+      const t = norm(raw);
+      if (/событие|event|календар/.test(t)){ showEvent(e.events[Math.floor(Math.random()*e.events.length)]); return; }
+    }
+    setHeard('Скажи событие или нажми на день.');
+  }, alts => {
+    const t = norm(alts[0] || '');
+    if (/событие|event|календар/.test(t)) showEvent(e.events[Math.floor(Math.random()*e.events.length)]);
+  });
+}
+function showEvent(ev){
+  document.getElementById('fb').textContent = '📅 ' + ev.d + ' число — ' + ev.t;
+  document.getElementById('fb').className = 'feedback ok';
+  speakRu(ev.d + ' числа ' + ev.t);
+  soundOk();
+}
+
+/* ==================== TRUE / FALSE ==================== */
+function renderTF(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const total = e.items.length;
+  if (state.itemIdx >= total){ renderResult(total); return; }
+  const it = e.items[state.itemIdx];
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="nav-btn" onclick="prevTF()" ${state.itemIdx === 0 ? 'disabled' : ''}>← Назад</button>
+        <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-left:auto;">← К заданиям</button>
+      </div>
+      <h2>${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      ${progressHTML(total, state.itemIdx, state.score, state.streak)}
+      <div class="sentence">
+        <span class="pic">${it.pic || '❓'}</span>
+        <span class="text">${it.s}</span>
+      </div>
+      <div class="voice-hint">
+        <span class="ico">💡</span>
+        <span><b>Как отвечать голосом:</b> скажи <b>«правда»</b> или <b>«ложь»</b>, либо нажми на кнопку.</span>
+      </div>
+      <div class="options" id="opts">
+        <button class="opt" data-v="true">✅ Правда</button>
+        <button class="opt" data-v="false">❌ Ложь</button>
+      </div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="motivation" id="motiv"></div>
+    </div>`;
+  document.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => checkTF(b.dataset.v === 'true', b));
+  bindAnswerBar(alts => handleTFVoice(alts), alts => handleTFVoice(alts));
+  speakEn(it.s);
+}
+function prevTF(){ if (state.itemIdx > 0){ state.itemIdx--; state.streak = 0; renderTF(); } }
+function handleTFVoice(alts){
+  for (let raw of alts){
+    const t = norm(raw);
+    if (/правда|true|верно/.test(t)){ checkTF(true, null); return; }
+    if (/ложь|false|неверно/.test(t)){ checkTF(false, null); return; }
+  }
+  setHeard('Скажи правда или ложь.');
+}
+function checkTF(val, btn){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const it = e.items[state.itemIdx];
+  const fb = document.getElementById('fb'); const mot = document.getElementById('motiv');
+  const ok = val === it.a;
+  document.querySelectorAll('#opts .opt').forEach(b => b.onclick = null);
+  if (ok){
+    if (btn) btn.classList.add('ok');
+    state.score++; state.streak++;
+    fb.textContent = '✅ Верно!'; fb.className = 'feedback ok';
+    mot.textContent = '🎉 ' + motivate(); confetti(20); soundOk();
+  } else {
+    if (btn) btn.classList.add('bad');
+    state.streak = 0;
+    fb.textContent = '❌ Неверно. Правильный ответ: ' + (it.a ? 'правда' : 'ложь'); fb.className = 'feedback bad';
+    soundBad();
+  }
+  setTimeout(() => { state.itemIdx++; renderTF(); }, 1700);
+}
+
+/* ==================== SPELLING ==================== */
+function renderSpelling(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const total = e.words.length;
+  if (state.spellIdx >= total){ renderResult(total); return; }
+  const word = e.words[state.spellIdx];
+  state.spellCur = word; state.spellTyped = "";
+  const extra = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(c=>!word.includes(c)).sort(()=>Math.random()-0.5).slice(0,4);
+  const letters = [...word.split(''), ...extra].sort(()=>Math.random()-0.5);
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="nav-btn" onclick="prevSpelling()" ${state.spellIdx === 0 ? 'disabled' : ''}>← Назад</button>
+        <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-left:auto;">← К заданиям</button>
+      </div>
+      <h2>🔊 ${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      ${progressHTML(total, state.spellIdx, state.score, state.streak)}
+      <div class="sentence" style="text-align:center">
+        <button class="btn blue" id="playBtn">🔊 Слушать слово</button>
+        <div class="answer-line" id="spellAnswer" style="margin-top:14px"></div>
+      </div>
+      <div class="letters" id="letters">${letters.map(ch=>`<button data-ch="${ch}">${ch}</button>`).join('')}</div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="motivation" id="motiv"></div>
+      <div class="hint">🎯 Скажи повтори или repeat, чтобы услышать ещё раз. Буквы удобнее нажимать.</div>
+    </div>`;
+  setTimeout(()=>speakEn(word), 300);
+  document.getElementById('playBtn').onclick = () => speakEn(word);
+  document.querySelectorAll('#letters button').forEach(b => b.onclick = () => { b.classList.add('used'); addSpellLetter(b.dataset.ch); });
+  bindAnswerBar(alts => {
+    for (let raw of alts){ const t = norm(raw); if (/повтори|repeat/.test(t)){ speakEn(word); return; } }
+  }, alts => { const t = norm(alts[0] || ''); if (/повтори|repeat/.test(t)) speakEn(word); });
+}
+function prevSpelling(){ if (state.spellIdx > 0){ state.spellIdx--; state.streak = 0; renderSpelling(); } }
+function addSpellLetter(ch){
+  state.spellTyped += ch;
+  document.getElementById('spellAnswer').textContent = state.spellTyped;
+  if (state.spellTyped.length === state.spellCur.length){
+    const fb = document.getElementById('fb'); const mot = document.getElementById('motiv');
+    if (state.spellTyped === state.spellCur){
+      state.score++; state.streak++;
+      fb.textContent = '✅ Правильно!'; fb.className = 'feedback ok';
+      mot.textContent = '🎉 ' + motivate(); confetti(20); soundOk();
+      speakEn(state.spellCur);
+    } else {
+      state.streak = 0;
+      fb.textContent = '❌ Неверно. Слово: ' + state.spellCur; fb.className = 'feedback bad';
+      soundBad(); speakRu('Правильное слово: ' + state.spellCur);
+    }
+    setTimeout(() => { state.spellIdx++; renderSpelling(); }, 1900);
+  }
+}
+
+/* ==================== NUMBERS 1–100 ==================== */
+const num1_19 = ["one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const tensWords = ["twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function numberToWords(n){
+  if (n < 20) return num1_19[n-1];
+  if (n === 100) return "one hundred";
+  const t = Math.floor(n/10), r = n%10;
+  if (r === 0) return tensWords[t-2];
+  return tensWords[t-2] + "-" + num1_19[r-1];
+}
+function renderNumbers(){
+  const e = DATA.topics[state.ex.i].exercises[state.ex.j];
+  const total = e.count;
+  if (state.numIdx >= total){ renderResult(total); return; }
+  const num = Math.floor(Math.random()*100)+1;
+  state.numCur = num;
+  const word = numberToWords(num);
+  const opts = [num];
+  while (opts.length < 4){ let n = Math.floor(Math.random()*100)+1; if (!opts.includes(n)) opts.push(n); }
+  opts.sort(()=>Math.random()-0.5);
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+        <button class="nav-btn" onclick="prevNumbers()" ${state.numIdx === 0 ? 'disabled' : ''}>← Назад</button>
+        <button class="nav-btn" onclick="openTopic(${state.ex.i})" style="margin-left:auto;">← К заданиям</button>
+      </div>
+      <h2>🔢 ${e.title}</h2>
+      <p class="sub">${e.instruction}</p>
+      ${progressHTML(total, state.numIdx, state.score, state.streak)}
+      <div class="sentence" style="text-align:center">
+        <button class="btn blue" id="playBtn">🔊 Слушать число</button>
+        <div class="hidden-word" id="numHidden" style="margin-top:14px">? ? ?</div>
+      </div>
+      <div class="voice-hint">
+        <span class="ico">💡</span>
+        <span><b>Как отвечать голосом:</b> назови цифру по-русски — например, «сорок два». Или нажми на кнопку.</span>
+      </div>
+      <div class="numrow" id="numOpts">${opts.map(n=>`<button data-n="${n}">${n}</button>`).join('')}</div>
+      ${answerBar()}
+      <div class="feedback" id="fb"></div>
+      <div class="motivation" id="motiv"></div>
+      <div class="hint">🎯 Число не показывается — только произносится. Скажи повтори, чтобы услышать снова.</div>
+    </div>`;
+  setTimeout(()=>speakEn(word), 300);
+  document.getElementById('playBtn').onclick = () => speakEn(word);
+  document.querySelectorAll('#numOpts button').forEach(b => b.onclick = () => checkNumber(+b.dataset.n, b));
+  bindAnswerBar(alts => {
+    for (let raw of alts){
+      const t = norm(raw);
+      if (/повтори|repeat/.test(t)){ speakEn(word); return; }
+      const n = parseRussianNumber(t);
+      if (n !== null && n >= 1 && n <= 100){ checkNumber(n, null); return; }
+      const d = parseInt(t, 10);
+      if (!isNaN(d) && d >= 1 && d <= 100){ checkNumber(d, null); return; }
+    }
+  }, alts => { const t = norm(alts[0] || ''); if (/повтори|repeat/.test(t)) speakEn(word); });
+}
+function prevNumbers(){ if (state.numIdx > 0){ state.numIdx--; state.streak = 0; renderNumbers(); } }
+function parseRussianNumber(text){
+  const ones = {'один':1,'одна':1,'два':2,'две':2,'три':3,'четыре':4,'пять':5,'шесть':6,'семь':7,'восемь':8,'девять':9,'десять':10,'одиннадцать':11,'двенадцать':12,'тринадцать':13,'четырнадцать':14,'пятнадцать':15,'шестнадцать':16,'семнадцать':17,'восемнадцать':18,'девятнадцать':19};
+  const tens = {'двадцать':20,'тридцать':30,'сорок':40,'пятьдесят':50,'шестьдесят':60,'семьдесят':70,'восемьдесят':80,'девяносто':90};
+  const t = text.replace(/-/g,' ').replace(/\s+/g,' ').trim();
+  if (t === 'сто' || t === 'hundred') return 100;
+  let total = 0, found = false;
+  for (const p of t.split(' ')){
+    if (tens[p] !== undefined){ total += tens[p]; found = true; }
+    else if (ones[p] !== undefined){ total += ones[p]; found = true; }
+  }
+  if (found) return total;
+  const enOnes = {'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10,'eleven':11,'twelve':12,'thirteen':13,'fourteen':14,'fifteen':15,'sixteen':16,'seventeen':17,'eighteen':18,'nineteen':19};
+  const enTens = {'twenty':20,'thirty':30,'forty':40,'fifty':50,'sixty':60,'seventy':70,'eighty':80,'ninety':90};
+  total = 0; found = false;
+  for (const p of t.split(' ')){
+    if (enTens[p] !== undefined){ total += enTens[p]; found = true; }
+    else if (enOnes[p] !== undefined){ total += enOnes[p]; found = true; }
+    else if (p === 'hundred'){ total = (total || 1) * 100; found = true; }
+  }
+  return found ? total : null;
+}
+function checkNumber(n, btn){
+  const fb = document.getElementById('fb'); const mot = document.getElementById('motiv');
+  const hidden = document.getElementById('numHidden');
+  document.querySelectorAll('#numOpts button').forEach(b => b.disabled = true);
+  hidden.textContent = numberToWords(state.numCur); hidden.classList.add('reveal');
+  if (n === state.numCur){
+    if (btn) btn.classList.add('ok');
+    state.score++; state.streak++;
+    fb.textContent = '✅ Верно!'; fb.className = 'feedback ok';
+    mot.textContent = '🎉 ' + motivate(); confetti(20); soundOk();
+  } else {
+    if (btn) btn.classList.add('bad');
+    state.streak = 0;
+    fb.textContent = '❌ Неверно. Это ' + state.numCur; fb.className = 'feedback bad';
+    soundBad();
+  }
+  setTimeout(() => { state.numIdx++; renderNumbers(); }, 1800);
+}
+
+/* ==================== RESULT ==================== */
+function renderResult(total){
+  const pct = total ? state.score / total : 0;
+  const stars = pct >= 0.99 ? '⭐⭐⭐' : pct >= 0.7 ? '⭐⭐' : pct >= 0.4 ? '⭐' : '💪';
+  const msg = pct >= 0.99 ? 'Отлично! Без ошибок!' : pct >= 0.7 ? 'Хорошая работа!' : pct >= 0.4 ? 'Неплохо, потренируйся!' : 'Не сдавайся!';
+  confetti(60); soundOk();
+  app.innerHTML = `
+    <div class="card result">
+      <h1>🏁 Итог: ${state.score} из ${total}</h1>
+      <div class="stars">${stars}</div>
+      <p class="sub">${msg}</p>
+      <div class="controls" style="justify-content:center;">
+        <button class="btn blue" onclick="openExercise(${state.ex.i},${state.ex.j})">🔁 Пройти ещё раз</button>
+        <button class="btn gray" onclick="openTopic(${state.ex.i})">📋 К списку заданий</button>
+        <button class="btn gray" onclick="showHome()">🏠 К разделам</button>
+      </div>
+    </div>`;
+  speakRu('Итог: ' + state.score + ' из ' + total + '. ' + msg);
+}
+
+if (!SR){
+  setTimeout(()=>alert('Ваш браузер не поддерживает распознавание речи.\nГолосовой ввод работает в Chrome и Edge.\nВ любом браузере можно вводить ответы с клавиатуры.'), 400);
+}
+showHome();
+</script>
+</body>
+</html>
