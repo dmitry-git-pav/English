@@ -183,7 +183,7 @@
       <option value="ru">🇷🇺 Русский</option>
       <option value="en">🇬🇧 English</option>
     </select>
-    <span class="vosk-status" id="voskStatus">загрузка...</span>
+    <span class="vosk-status" id="voskStatus">Загрузка...</span>
   </div>
 </header>
 
@@ -449,7 +449,7 @@ function norm(s){ return s.toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я
 function setHeard(html){ const el = document.getElementById('heard'); if (el) el.innerHTML = html; }
 
 /* ================================================================
-   ОЗВУЧКА (SpeechSynthesis)
+   ГОЛОС (SpeechSynthesis)
    ================================================================ */
 let allVoices = [];
 let chosenRu = null, chosenEn = null;
@@ -500,7 +500,7 @@ function speakRu(t){ speak(t, 'ru-RU'); }
 function speakEn(t){ speak(t, 'en-US'); }
 
 /* ================================================================
-   VOSK (РАСПОЗНАВАНИЕ)
+   РАСПОЗНАВАНИЕ (Vosk)
    ================================================================ */
 const MODEL_PATHS = {
   ru: 'vosk-model-small-ru-0.22.tar.gz',
@@ -525,11 +525,23 @@ async function loadVoskModel(lang){
   if (voskLoaded[lang] && voskModel && voskModel._lang === lang) return voskModel;
   setVoskStatus('Загрузка...');
   try {
+    // Библиотека ожидает путь к папке, но мы передаем имя файла. 
+    // Чтобы она не добавляла /model.tar.gz, мы делаем хитрый трюк:
+    // она попытается загрузить '...tar.gz/model.tar.gz', но мы перехватим это в fetch.
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+      if (url.includes('.tar.gz/model.tar.gz')) {
+         url = url.replace('/model.tar.gz', '');
+      }
+      return originalFetch(url, options);
+    };
+    
     const model = await Vosk.createModel(MODEL_PATHS[lang]);
     model._lang = lang;
     voskModel = model;
     voskLoaded[lang] = true;
     setVoskStatus('Готов', 'ok');
+    window.fetch = originalFetch; // возвращаем как было
     return model;
   } catch(e){
     console.error('Model load error:', e);
