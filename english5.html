@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>English 5 — умные задания (Vosk)</title>
+<title>English 5 — умные задания</title>
 <style>
   :root{
     --bg:#f4f7ff; --card:#ffffff; --ink:#22304a; --muted:#6b7a99;
@@ -103,15 +103,6 @@
   .voice-hint .ico{font-size:20px;}
   .voice-hint b{color:#5c4400;}
   .answer-bar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; background:#f2f6ff; border:1px solid var(--border); border-radius:14px; padding:12px;}
-  
-  .mic-wrap{display:flex; gap:6px; align-items:center; flex-shrink:0;}
-  .lang-btn{
-    padding:8px 12px; border-radius:8px; border:2px solid var(--border); background:#fff;
-    font-size:13px; font-weight:700; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:4px;
-  }
-  .lang-btn.active{border-color:var(--blue); background:var(--blue); color:#fff;}
-  .lang-btn:hover:not(.active){background:#f2f6ff;}
-  
   .mic-btn{
     width:56px; height:56px; border-radius:50%; border:none; background:var(--blue);
     color:#fff; font-size:22px; cursor:pointer; display:flex; align-items:center;
@@ -120,7 +111,6 @@
   .mic-btn:hover{background:var(--blue-d); transform:scale(1.08);}
   .mic-btn.listening{background:var(--red); animation:pulse 1s infinite;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(224,82,82,.5)}70%{box-shadow:0 0 0 14px rgba(224,82,82,0)}100%{box-shadow:0 0 0 0 rgba(224,82,82,0)}}
-  
   .answer-bar input{flex:1; min-width:150px; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:16px;}
   .answer-bar input:focus{outline:2px solid var(--blue); border-color:var(--blue);}
   .btn{border:none; border-radius:10px; padding:10px 18px; font-size:15px; font-weight:700; cursor:pointer; background:var(--green); color:#fff; transition:.15s;}
@@ -186,10 +176,10 @@
 <body>
 
 <header>
-  <div class="logo"><span class="flag">🇬🇧</span>English <span>5 класс</span> — Vosk офлайн 🎓</div>
+  <div class="logo"><span class="flag">🇬🇧</span>English <span>5 класс</span> 🎓</div>
   <div class="voice-panel">
-    🌐 Язык распознавания:
-    <select id="voskLang" style="padding:6px 10px; border-radius:8px; border:1px solid var(--border); font-weight:700;">
+    🌐 Язык:
+    <select id="voskLang" style="padding:6px 10px; border-radius:8px; border:1px solid var(--border); font-weight:700; font-family:inherit;">
       <option value="ru">🇷🇺 Русский</option>
       <option value="en">🇬🇧 English</option>
     </select>
@@ -199,7 +189,6 @@
 
 <main id="app"></main>
 
-<!-- Подключаем библиотеку Vosk -->
 <script src="https://cdn.jsdelivr.net/npm/vosk-browser@0.0.8/dist/vosk.js"></script>
 
 <script>
@@ -460,14 +449,13 @@ function norm(s){ return s.toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я
 function setHeard(html){ const el = document.getElementById('heard'); if (el) el.innerHTML = html; }
 
 /* ================================================================
-   ГОЛОС ОЗВУЧКИ (SpeechSynthesis)
+   ОЗВУЧКА (SpeechSynthesis)
    ================================================================ */
 let allVoices = [];
 let chosenRu = null, chosenEn = null;
 
-const RU_PRIORITY = ['Microsoft Pavel','Microsoft Svetlana Online (Natural)','Microsoft Dariya Online (Natural)','Microsoft Dmitry Online (Natural)','Google русский','Microsoft Irina','Microsoft Katya','Milena','Yuri'];
-const EN_PRIORITY = ['Microsoft David','Microsoft Aria Online (Natural)','Microsoft Jenny Online (Natural)','Microsoft Guy Online (Natural)','Google UK English Female','Google US English','Samantha','Karen','Daniel','Microsoft Zira','Microsoft Hazel','Alex'];
-const GOOD_RE = /natural|online|google|premium|enhanced|samantha|karen|daniel|aria|jenny|guy|svetlana|dariya|dmitry|pavel|david/i;
+const RU_PRIORITY = ['Microsoft Pavel','Microsoft Irina','Microsoft Katya','Milena','Yuri'];
+const EN_PRIORITY = ['Microsoft David','Microsoft Zira','Microsoft Hazel','Samantha','Karen','Daniel','Alex'];
 
 function refreshVoices(){
   if (!window.speechSynthesis) return;
@@ -481,7 +469,7 @@ function refreshVoices(){
 }
 function pickByPriority(list, priority){
   for (const name of priority){ const f = list.find(v => v.name === name || v.name.includes(name)); if (f) return f; }
-  return list.find(v => GOOD_RE.test(v.name)) || list.find(v => !/compact|robot|espeak/i.test(v.name)) || list[0] || null;
+  return list[0] || null;
 }
 if (window.speechSynthesis){
   refreshVoices();
@@ -512,11 +500,11 @@ function speakRu(t){ speak(t, 'ru-RU'); }
 function speakEn(t){ speak(t, 'en-US'); }
 
 /* ================================================================
-   VOSK (РАСПОЗНАВАНИЕ РЕЧИ)
+   VOSK (РАСПОЗНАВАНИЕ)
    ================================================================ */
 const MODEL_PATHS = {
-  ru: 'vosk-model-small-ru-0.22',
-  en: 'vosk-model-small-en-us-0.15'
+  ru: 'vosk-model-small-ru-0.22.tar.gz',
+  en: 'vosk-model-small-en-us-0.15.tar.gz'
 };
 let voskModel = null;
 let voskLoaded = { ru:false, en:false };
@@ -531,21 +519,21 @@ function setVoskStatus(text, cls){
 
 async function loadVoskModel(lang){
   if (!window.Vosk){
-    setVoskStatus('CDN недоступен', 'err');
+    setVoskStatus('Нет интернета', 'err');
     return null;
   }
   if (voskLoaded[lang] && voskModel && voskModel._lang === lang) return voskModel;
-  setVoskStatus('загрузка ' + lang + '...');
+  setVoskStatus('Загрузка...');
   try {
-    const model = await Vosk.createModel(MODEL_PATHS[lang] + '/model.tar.gz');
+    const model = await Vosk.createModel(MODEL_PATHS[lang]);
     model._lang = lang;
     voskModel = model;
     voskLoaded[lang] = true;
-    setVoskStatus(lang.toUpperCase() + ' готова ✓', 'ok');
+    setVoskStatus('Готов', 'ok');
     return model;
   } catch(e){
-    console.error('Vosk model load error:', e);
-    setVoskStatus(lang.toUpperCase() + ' не загрузилась', 'err');
+    console.error('Model load error:', e);
+    setVoskStatus('Не удалось', 'err');
     return null;
   }
 }
@@ -565,7 +553,7 @@ async function startVosk(onResult){
     voskRec.on('result', (msg) => {
       const text = msg.result && msg.result.text;
       if (text){
-        setHeard('Распознано (' + lang + '): <b>' + text + '</b>');
+        setHeard('🎤 ' + text);
         if (onResult) onResult([text]);
       }
     });
@@ -579,10 +567,10 @@ async function startVosk(onResult){
     source.connect(voskNode);
     voskNode.connect(voskAudioCtx.destination);
     updateMicUI(true);
-    setHeard('🎙️ Слушаю (' + lang + '). Скажите ответ.');
+    setHeard('🎙️ Слушаю...');
   } catch(e){
-    console.error('Vosk start error:', e);
-    setHeard('⚠️ Ошибка микрофона. Используйте кнопки или клавиатуру.');
+    console.error('Start error:', e);
+    setHeard('⚠️ Микрофон недоступен');
     updateMicUI(false);
   }
 }
@@ -599,12 +587,11 @@ function stopVosk(){
 function updateMicUI(on){ document.querySelectorAll('.mic-btn').forEach(b => b.classList.toggle('listening', on)); }
 
 document.getElementById('voskLang').onchange = () => {
-  if (voskRec) { stopVosk(); setHeard('Язык переключён. Нажмите 🎤 снова.'); }
+  if (voskRec) { stopVosk(); setHeard('Нажмите 🎤 снова.'); }
   const lang = document.getElementById('voskLang').value;
   loadVoskModel(lang);
 };
 
-/* Предзагрузка русской модели при старте */
 setTimeout(() => loadVoskModel('ru'), 500);
 
 /* ============ КРЕАТИВ ============ */
@@ -644,12 +631,12 @@ function motivate(){
 function answerBar(){
   return `
     <div class="answer-bar">
-      <button class="mic-btn" id="micBtn" title="Сказать ответ / Остановить">🎤</button>
+      <button class="mic-btn" id="micBtn" title="Сказать ответ">🎤</button>
       <input id="typedAnswer" type="text" placeholder="…или введи ответ с клавиатуры" autocomplete="off">
       <button class="btn blue" id="checkBtn">Проверить</button>
     </div>
     <div class="heard" id="heard"></div>
-    <div class="hint">🎙️ Нажмите 🎤 для записи. Повторное нажатие — стоп. Если не работает, используйте кнопки.</div>`;
+    <div class="hint">🎙️ Нажмите на микрофон и назовите номер варианта. Повторное нажатие — стоп.</div>`;
 }
 function bindAnswerBar(onSubmit, onVoice){
   const btn = document.getElementById('micBtn');
@@ -676,7 +663,7 @@ function showHome(){
   app.innerHTML = `
     <div class="card">
       <h1>👋 Выбери раздел</h1>
-      <p class="sub">Задания для 5 класса. Отвечай голосом (Vosk), мышью или с клавиатуры.</p>
+      <p class="sub">Задания для 5 класса. Отвечай голосом (называй номер варианта), мышью или с клавиатуры.</p>
       <div class="topic-grid">
         ${DATA.topics.map((t,i)=>`
           <div class="topic" onclick="openTopic(${i})">
@@ -739,7 +726,7 @@ function renderChoice(){
       </div>
       <div class="voice-hint">
         <span class="ico">💡</span>
-        <span><b>Как отвечать голосом:</b> скажи <b>«первый»</b>, <b>«второй»</b> или <b>«третий»</b> — программа выберет вариант по номеру. Можно нажать на кнопку или ввести слово с клавиатуры.</span>
+        <span><b>Как отвечать:</b> скажи <b>«первый»</b>, <b>«второй»</b> или <b>«третий»</b> — программа выберет вариант по номеру. Можно нажать на кнопку или ввести слово с клавиатуры.</span>
       </div>
       <div class="options" id="opts">
         ${it.options.map((o,i)=>`<button class="opt" data-v="${o}" data-idx="${i}"><span class="num">${i+1}</span>${o}</button>`).join('')}
@@ -767,7 +754,7 @@ function handleChoiceVoice(alts){
     }
     for (const o of it.options) if (norm(o) === t){ checkChoice(o, null); return; }
   }
-  setHeard('Не понял. Скажи: первый, второй или третий. Или нажми на кнопку.');
+  setHeard('Не понял. Скажи: первый, второй или третий.');
 }
 function checkChoice(val, btnEl){
   const e = DATA.topics[state.ex.i].exercises[state.ex.j];
@@ -991,7 +978,7 @@ function renderTF(){
       </div>
       <div class="voice-hint">
         <span class="ico">💡</span>
-        <span><b>Как отвечать голосом:</b> скажи <b>«правда»</b> или <b>«ложь»</b>, либо нажми на кнопку.</span>
+        <span><b>Как отвечать:</b> скажи <b>«правда»</b> или <b>«ложь»</b>, либо нажми на кнопку.</span>
       </div>
       <div class="options" id="opts">
         <button class="opt" data-v="true">✅ Правда</button>
@@ -1124,7 +1111,7 @@ function renderNumbers(){
       </div>
       <div class="voice-hint">
         <span class="ico">💡</span>
-        <span><b>Как отвечать голосом:</b> назови цифру по-русски — например, «сорок два». Или нажми на кнопку.</span>
+        <span><b>Как отвечать:</b> назови цифру по-русски — например, «сорок два». Или нажми на кнопку.</span>
       </div>
       <div class="numrow" id="numOpts">${opts.map(n=>`<button data-n="${n}">${n}</button>`).join('')}</div>
       ${answerBar()}
@@ -1207,10 +1194,6 @@ function renderResult(total){
   speakRu('Итог: ' + state.score + ' из ' + total + '. ' + msg);
 }
 
-/* Инициализация */
-if (!window.Vosk){
-  setTimeout(()=>setHeard('⚠️ Vosk не загрузился. Проверьте интернет. Используйте кнопки.'), 1000);
-}
 showHome();
 </script>
 </body>
